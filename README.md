@@ -2,7 +2,7 @@
 
 # 🚀 Zenith Focus
 
-### Modern Landing Page Project
+### Pomodoro & Focus Landing Page
 
 🔗 **Live Demo:**
 https://berfinida.github.io/ZenithFocus_Proje/
@@ -13,19 +13,20 @@ https://berfinida.github.io/ZenithFocus_Proje/
 
 ## 📌 Project Purpose
 
-Zenith Focus was created as a modern landing page project to practice clean UI design, visual hierarchy and responsive frontend development.
+Zenith Focus is a productivity-focused web project designed around the **Pomodoro technique** and deep focus mindset.
 
-The main aim of this website is to build a simple, professional and focused user experience using minimal design principles.
+The aim of this project is to create a modern and minimal website that helps users understand and experience focused work sessions through a clean and distraction-free interface.
 
 ---
 
-## 🎯 Goals
+## 🎯 Main Idea
 
-* Create a modern and clean landing page
-* Practice frontend layout structure
-* Improve UI/UX design thinking
-* Build responsive web design experience
-* Develop a strong visual hierarchy
+This project was created to:
+
+* Present a focus & productivity concept
+* Build a clean Pomodoro-inspired landing page
+* Practice modern frontend layout design
+* Improve UI/UX structure and visual hierarchy
 
 ---
 
@@ -39,11 +40,11 @@ The main aim of this website is to build a simple, professional and focused user
 
 ## ✨ Features
 
-* Modern minimal design
-* Section-based layout
-* Responsive structure
+* Focus-oriented design
+* Minimal & distraction-free layout
+* Modern landing page structure
+* Responsive design
 * Clean typography and spacing
-* User-focused visual flow
 
 ---
 
@@ -58,4 +59,4 @@ The main aim of this website is to build a simple, professional and focused user
 
 ## 🚀 Note
 
-This project is part of my frontend development journey, focused on creating modern and visually clear web interfaces.
+This project is part of my frontend development journey and focuses on creating modern, user-centered interfaces inspired by real productivity concepts.
