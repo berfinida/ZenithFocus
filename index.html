@@ -451,29 +451,246 @@
             font-weight: 600;
         }
 
-        @media (max-width: 480px) {
+        /* Tablet ve küçük dizüstü */
+        @media (max-width: 768px) {
             .zenith-app {
-                padding: 40px 25px;
-                border-radius: 30px;
+                max-width: 380px;
+                padding: 50px 30px;
             }
 
             #timer-display {
-                font-size: 56px;
+                font-size: 64px;
             }
 
             .progress-ring-container {
-                width: 220px;
-                height: 220px;
+                width: 250px;
+                height: 250px;
+            }
+
+            .control-group {
+                margin-bottom: 30px;
+            }
+
+            .btn-main {
+                height: 55px;
+                font-size: 14px;
+            }
+        }
+
+        /* Mobil cihazlar */
+        @media (max-width: 480px) {
+            .zenith-app {
+                width: 95%;
+                padding: 30px 20px;
+                border-radius: 25px;
+                max-height: 95vh;
+                overflow-y: auto;
+            }
+
+            .theme-toggle {
+                top: 15px;
+                right: 15px;
+                padding: 8px 12px;
+                font-size: 11px;
+            }
+
+            #timer-display {
+                font-size: 52px;
+            }
+
+            .timer-mode {
+                font-size: 10px;
+            }
+
+            .progress-ring-container {
+                width: 200px;
+                height: 200px;
+            }
+
+            .progress-ring {
+                width: 200px;
+                height: 200px;
+            }
+
+            .progress-ring circle {
+                r: 90;
+                cx: 100;
+                cy: 100;
+            }
+
+            .mode-selector {
+                gap: 6px;
+                margin-bottom: 20px;
             }
 
             .mode-btn {
-                padding: 6px 12px;
+                padding: 8px 10px;
                 font-size: 10px;
+                flex: 1;
+            }
+
+            .control-group {
+                gap: 10px;
+                margin-bottom: 25px;
+            }
+
+            .btn-main {
+                height: 50px;
+                font-size: 13px;
+                border-radius: 15px;
+            }
+
+            .btn-icon {
+                width: 50px;
+                font-size: 18px;
+            }
+
+            .source-selector {
+                gap: 6px;
+                margin-bottom: 15px;
             }
 
             .source-btn {
-                padding: 6px 10px;
+                padding: 8px 10px;
+                font-size: 9px;
+                flex: 1;
+                justify-content: center;
+            }
+
+            .source-btn i {
+                display: none;
+            }
+
+            .mixer-panel {
+                padding-top: 20px;
+                gap: 15px;
+            }
+
+            .audio-track {
+                padding: 5px 0;
+            }
+
+            .track-label {
                 font-size: 10px;
+                min-width: 60px;
+            }
+
+            input[type="range"] {
+                height: 24px;
+                -webkit-appearance: none;
+                background: transparent;
+            }
+
+            input[type="range"]::-webkit-slider-runnable-track {
+                height: 4px;
+                background: var(--border);
+                border-radius: 10px;
+            }
+
+            input[type="range"]::-webkit-slider-thumb {
+                width: 20px;
+                height: 20px;
+                margin-top: -8px;
+            }
+
+            .footer {
+                margin-top: 20px;
+                font-size: 9px;
+            }
+
+            .youtube-container iframe {
+                height: 120px;
+            }
+
+            .external-player {
+                padding: 10px;
+            }
+
+            .external-player a {
+                padding: 10px 15px;
+                font-size: 11px;
+            }
+        }
+
+        /* Büyük ekranlar */
+        @media (min-width: 1200px) {
+            .zenith-app {
+                max-width: 500px;
+                padding: 70px 50px;
+            }
+
+            #timer-display {
+                font-size: 88px;
+            }
+
+            .progress-ring-container {
+                width: 320px;
+                height: 320px;
+            }
+
+            .mode-btn {
+                padding: 12px 20px;
+                font-size: 12px;
+            }
+
+            .source-btn {
+                padding: 10px 18px;
+                font-size: 12px;
+            }
+
+            .btn-main {
+                height: 65px;
+                font-size: 16px;
+            }
+        }
+
+        /* Yatay mobil */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                height: auto;
+                min-height: 100vh;
+                padding: 20px 0;
+            }
+
+            .zenith-app {
+                padding: 25px 30px;
+                border-radius: 25px;
+            }
+
+            .progress-ring-container {
+                width: 120px;
+                height: 120px;
+            }
+
+            #timer-display {
+                font-size: 36px;
+            }
+
+            .brand-name {
+                margin-bottom: 15px;
+            }
+
+            .mode-selector {
+                margin-bottom: 15px;
+            }
+
+            .mode-btn {
+                padding: 5px 10px;
+                font-size: 9px;
+            }
+
+            .control-group {
+                margin-bottom: 15px;
+            }
+
+            .btn-main {
+                height: 40px;
+                font-size: 12px;
+            }
+
+            .mixer-panel {
+                padding-top: 15px;
+                gap: 10px;
             }
         }
 
