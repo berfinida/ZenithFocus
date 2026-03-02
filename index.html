@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenith Focus // Deep Work Suite</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;600&family=JetBrains+Mono:wght@200&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Varsayılan Gece Modu Değişkenleri */
+            --bg: #030305;
+            --accent: #a5b4fc; 
+            --accent-glow: rgba(165, 180, 252, 0.25);
+            --card: rgba(15, 15, 25, 0.6);
+            --border: rgba(255, 255, 255, 0.07);
+            --text-main: #ffffff;
+            --text-dim: #64748b;
+        }
+
+        /* Gündüz Modu Renk Paleti */
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --accent: #4f46e5;
+            --accent-glow: rgba(79, 70, 229, 0.15);
+            --card: rgba(255, 255, 255, 0.8);
+            --border: rgba(0, 0, 0, 0.05);
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; transition: background 0.4s ease, color 0.4s ease; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Arka Plan Hareketli Gradient */
+        .bg-gradient {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 20%, var(--accent-glow) 0%, transparent 40%);
+            z-index: 1;
+        }
+
+        /* Tema Değiştirme Butonu (Sağ Üst) */
+        .theme-toggle {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 20;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .zenith-app {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 420px;
+            padding: 60px 40px;
+            background: var(--card);
+            backdrop-filter: blur(40px) saturate(160%);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            text-align: center;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.15);
+        }
+
+        .brand-name {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 30px;
+        }
+
+        #timer-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 88px;
+            font-weight: 200;
+            letter-spacing: -4px;
+            line-height: 1;
+            margin: 20px 0;
+            transition: transform 0.3s ease;
+        }
+
+        .active-timer { transform: scale(1.05); color: var(--accent); }
+
+        .control-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 20px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-main {
+            flex: 2;
+            height: 60px;
+            background: var(--accent);
+            color: white;
+            font-size: 15px;
+        }
+
+        [data-theme="light"] .btn-main { color: #fff; }
+
+        .btn-icon {
+            flex: 1;
+            background: rgba(128, 128, 128, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+
+        .mixer-panel {
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .audio-track {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .track-label { font-size: 11px; font-weight: 600; color: var(--text-dim); letter-spacing: 1px; }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 60%;
+            height: 3px;
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px; height: 14px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .footer { margin-top: 30px; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div class="bg-gradient"></div>
+
+    <button class="theme-toggle" id="theme-btn">🌙 GECE MODU</button>
+
+    <main class="zenith-app">
+        <div class="brand-name">Zenith Focus</div>
+
+        <div class="timer-wrap">
+            <h1 id="timer-display">25:00</h1>
+        </div>
+
+        <div class="control-group">
+            <button class="btn btn-main" id="start-btn">Start Focus</button>
+            <button class="btn btn-icon" id="reset-btn">Reset</button>
+        </div>
+
+        <div class="mixer-panel">
+            <div class="audio-track">
+                <span class="track-label">RAINFALL</span>
+                <input type="range" class="vol-slider" data-src="rain" min="0" max="1" step="0.01" value="0">
+            </div>
+            <div class="audio-track">
+                <span class="track-label">FOREST</span>
+                <input type="range" class="vol-slider" data-src="forest" min="0" max="1" step="0.01" value="0">
+            </div>
+        </div>
+
+        <div class="footer">
+            SESSIONS COMPLETED: <span id="streak">0</span>
+        </div>
+    </main>
+
+    <audio id="audio-rain" loop src="https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3"></audio>
+    <audio id="audio-forest" loop src="https://assets.mixkit.co/sfx/preview/mixkit-forest-birds-ambience-1210.mp3"></audio>
+
+    <script>
+        class ZenithApp {
+            constructor() {
+                this.timeLeft = 1500;
+                this.isRunning = false;
+                this.interval = null;
+                this.theme = 'dark';
+
+                this.init();
+            }
+
+            init() {
+                this.dom = {
+                    body: document.body,
+                    timer: document.getElementById('timer-display'),
+                    startBtn: document.getElementById('start-btn'),
+                    resetBtn: document.getElementById('reset-btn'),
+                    themeBtn: document.getElementById('theme-btn'),
+                    sliders: document.querySelectorAll('.vol-slider')
+                };
+
+                this.bindEvents();
+                this.loadTheme();
+            }
+
+            bindEvents() {
+                this.dom.startBtn.onclick = () => this.toggleTimer();
+                this.dom.resetBtn.onclick = () => this.resetTimer();
+                this.dom.themeBtn.onclick = () => this.toggleTheme();
+                
+                this.dom.sliders.forEach(s => {
+                    s.oninput = (e) => this.handleAudio(e);
+                });
+
+                document.onkeydown = (e) => { if(e.code === 'Space') this.toggleTimer(); };
+            }
+
+            toggleTheme() {
+                this.theme = this.theme === 'dark' ? 'light' : 'dark';
+                this.dom.body.setAttribute('data-theme', this.theme);
+                this.dom.themeBtn.innerText = this.theme === 'dark' ? '🌙 GECE MODU' : '☀️ GÜNDÜZ MODU';
+                localStorage.setItem('zenith_theme', this.theme);
+            }
+
+            loadTheme() {
+                const saved = localStorage.getItem('zenith_theme');
+                if (saved) {
+                    this.theme = saved;
+                    this.dom.body.setAttribute('data-theme', this.theme);
+                    this.dom.themeBtn.innerText = this.theme === 'dark' ? '🌙 GECE MODU' : '☀️ GÜNDÜZ MODU';
+                }
+            }
+
+            toggleTimer() {
+                this.isRunning = !this.isRunning;
+                this.dom.startBtn.innerText = this.isRunning ? 'Pause' : 'Start Focus';
+                this.dom.timer.classList.toggle('active-timer', this.isRunning);
+
+                if (this.isRunning) {
+                    this.interval = setInterval(() => {
+                        if (this.timeLeft > 0) {
+                            this.timeLeft--;
+                            this.updateDisplay();
+                        } else {
+                            this.finish();
+                        }
+                    }, 1000);
+                } else {
+                    clearInterval(this.interval);
+                }
+            }
+
+            resetTimer() {
+                clearInterval(this.interval);
+                this.isRunning = false;
+                this.timeLeft = 1500;
+                this.dom.startBtn.innerText = 'Start Focus';
+                this.dom.timer.classList.remove('active-timer');
+                this.updateDisplay();
+            }
+
+            updateDisplay() {
+                const m = Math.floor(this.timeLeft / 60).toString().padStart(2, '0');
+                const s = (this.timeLeft % 60).toString().padStart(2, '0');
+                this.dom.timer.innerText = `${m}:${s}`;
+                document.title = `${m}:${s} // Zenith`;
+            }
+
+            handleAudio(e) {
+                const type = e.target.dataset.src;
+                const audio = document.getElementById(`audio-${type}`);
+                audio.volume = e.target.value;
+                if (audio.volume > 0 && audio.paused) audio.play();
+                else if (audio.volume == 0) audio.pause();
+            }
+
+            finish() {
+                this.resetTimer();
+                alert("Odaklanma seansı bitti! Harikasın.");
+            }
+        }
+
+        window.onload = () => new ZenithApp();
+    </script>
+</body>
+</html>
