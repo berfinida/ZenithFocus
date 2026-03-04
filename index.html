@@ -7,6 +7,9 @@
     <meta name="description" content="Deep Work Suite - Odaklanma ve Pomodoro Timer">
     <meta name="theme-color" content="#a5b4fc">
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;600&family=JetBrains+Mono:wght@200&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -37,7 +40,15 @@
             --progress-bg: rgba(0, 0, 0, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; transition: background 0.4s ease, color 0.4s ease; }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+
+        /* Tema geçişi sırasında geçici olarak aktif edilir */
+        body.theme-transitioning,
+        body.theme-transitioning *,
+        body.theme-transitioning *::before,
+        body.theme-transitioning *::after {
+            transition: background 0.4s ease, background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease !important;
+        }
 
         body {
             background-color: var(--bg);
@@ -62,6 +73,19 @@
         @keyframes gradientMove {
             0%, 100% { transform: scale(1) translate(0, 0); }
             50% { transform: scale(1.1) translate(-5%, -5%); }
+        }
+
+        /* Mobile-only butonlar CSS ile yönetilir */
+        .mobile-only {
+            position: fixed;
+            z-index: 20;
+            display: none;
+        }
+        #theme-btn-mobile { top: 15px; right: 15px; }
+        #stats-btn-mobile { top: 15px; left: 15px; }
+
+        @media (max-width: 899px) {
+            .mobile-only { display: block; }
         }
 
         /* Header toolbar for desktop */
@@ -154,7 +178,7 @@
         .brand-name { font-size: 10px; font-weight: 600; letter-spacing: 6px; text-transform: uppercase; color: var(--accent); margin-bottom: 25px; }
 
         .progress-ring-container { position: relative; width: 240px; height: 240px; margin: 0 auto; }
-        .progress-ring { transform: rotate(-90deg); }
+        .progress-ring { width: 100%; height: 100%; transform: rotate(-90deg); display: block; }
         .progress-ring__circle { transition: stroke-dashoffset 0.3s linear; }
         .timer-wrapper { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
@@ -217,6 +241,65 @@
         .spotify-link { background: var(--spotify); }
         .apple-link { background: var(--apple); }
 
+        .yt-presets { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; justify-content: center; }
+        .yt-preset-btn { padding: 5px 10px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); border-radius: 10px; font-size: 9px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s ease; }
+        .yt-preset-btn:hover { border-color: var(--youtube); color: var(--youtube); }
+        .yt-preset-btn.active { background: var(--youtube); border-color: var(--youtube); color: white; }
+        .yt-custom-input { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
+        .yt-custom-input input { flex: 1; padding: 7px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text-main); font-size: 11px; font-family: inherit; }
+        .yt-custom-input input::placeholder { color: var(--text-dim); }
+        .yt-custom-input input:focus { border-color: var(--youtube); outline: none; }
+
+        .custom-link-input { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
+        .custom-link-input input { flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text-main); font-size: 11px; font-family: inherit; }
+        .custom-link-input input::placeholder { color: var(--text-dim); }
+        .custom-link-input input:focus { border-color: var(--accent); outline: none; }
+        .custom-link-save { background: var(--accent); border: none; color: white; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 12px; flex-shrink: 0; transition: opacity 0.2s; }
+        .custom-link-save:hover { opacity: 0.85; }
+        .custom-link-hint { font-size: 9px; color: var(--text-dim); text-align: center; margin-top: 2px; }
+
+        .finish-countdown { font-size: 11px !important; color: var(--text-dim) !important; margin-bottom: 20px !important; }
+        .finish-countdown span { color: var(--accent); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+
+        /* Günlük Hedef */
+        .daily-goal-section { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border); }
+        .daily-goal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .goal-progress-bar { height: 6px; background: var(--progress-bg); border-radius: 10px; overflow: hidden; margin-bottom: 5px; }
+        .goal-progress-fill { height: 100%; background: var(--accent); border-radius: 10px; transition: width 0.4s ease; width: 0%; }
+        .goal-progress-label { font-size: 9px; color: var(--text-dim); text-align: right; letter-spacing: 0.5px; }
+
+        /* Görev Listesi */
+        .task-section { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
+        .task-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .task-count { font-size: 9px; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+        .task-input-row { display: flex; gap: 6px; margin-bottom: 10px; }
+        .task-input-row input { flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text-main); font-size: 11px; font-family: inherit; }
+        .task-input-row input::placeholder { color: var(--text-dim); }
+        .task-input-row input:focus { border-color: var(--accent); outline: none; }
+        .task-list { list-style: none; display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto; padding-right: 2px; }
+        .task-list::-webkit-scrollbar { width: 3px; }
+        .task-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        .task-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: rgba(0,0,0,0.15); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: border-color 0.2s; }
+        .task-item:hover { border-color: var(--accent); }
+        .task-item.done { opacity: 0.5; }
+        .task-item.done .task-text { text-decoration: line-through; }
+        .task-checkbox { width: 14px; height: 14px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; transition: all 0.2s; }
+        .task-item.done .task-checkbox { background: var(--accent); border-color: var(--accent); color: white; }
+        .task-text { flex: 1; font-size: 11px; color: var(--text-main); text-align: left; }
+        .task-delete { background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 11px; padding: 2px 4px; opacity: 0; transition: opacity 0.2s; }
+        .task-item:hover .task-delete { opacity: 1; }
+
+        /* Klavye Kısayolları */
+        .shortcuts-hint { margin-top: 8px; font-size: 9px; color: var(--text-dim); letter-spacing: 0.5px; }
+        .shortcut-key { display: inline-block; background: var(--progress-bg); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-family: 'JetBrains Mono', monospace; font-size: 8px; }
+
+        .cycle-setting { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); }
+        .cycle-controls { display: flex; align-items: center; gap: 8px; }
+        .cycle-btn { background: var(--card); border: 1px solid var(--border); color: var(--text-main); width: 26px; height: 26px; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.2s; line-height: 1; display: flex; align-items: center; justify-content: center; }
+        .cycle-btn:hover { border-color: var(--accent); color: var(--accent); }
+        #cycle-count { font-family: 'JetBrains Mono', monospace; font-size: 16px; color: var(--accent); min-width: 20px; text-align: center; }
+        .cycle-label { font-size: 9px; color: var(--text-dim); letter-spacing: 0.5px; }
+
         .notification-prompt { display: none; margin-top: 12px; font-size: 9px; }
         .notification-prompt.show { display: block; }
         .notification-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 5px 10px; border-radius: 8px; font-size: 9px; cursor: pointer; font-family: inherit; transition: all 0.3s ease; }
@@ -232,7 +315,7 @@
         .stats-header h2 { font-size: 16px; font-weight: 600; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; }
         .stats-close { background: transparent; border: 1px solid var(--border); color: var(--text-dim); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px; transition: all 0.3s ease; }
         .stats-close:hover { border-color: var(--accent); color: var(--accent); }
-        .stats-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stats-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 25px; }
         .stats-card { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); border-radius: 15px; padding: 15px; text-align: center; }
         .stats-card-value { font-size: 28px; font-weight: 600; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
         .stats-card-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
@@ -659,6 +742,18 @@
             }
         }
 
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .finish-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s ease; }
+        .finish-modal-content { background: var(--card); backdrop-filter: blur(40px); padding: 40px; border-radius: 30px; text-align: center; border: 1px solid var(--border); max-width: 320px; width: 90%; }
+        .finish-modal h2 { font-size: 40px; margin-bottom: 12px; }
+        .finish-modal p { color: var(--text-dim); font-size: 14px; line-height: 1.5; }
+        .finish-sub { margin-top: 8px; margin-bottom: 24px; color: var(--accent) !important; font-weight: 600; font-size: 12px !important; }
+        .finish-modal-actions { display: flex; flex-direction: column; gap: 10px; }
+        .finish-start-btn { background: var(--accent); color: white; border: none; padding: 13px 30px; border-radius: 15px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.2s; }
+        .finish-start-btn:hover { opacity: 0.85; }
+        .finish-modal-dismiss { background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 10px 20px; border-radius: 12px; font-size: 12px; cursor: pointer; font-family: inherit; transition: border-color 0.2s; }
+        .finish-modal-dismiss:hover { border-color: var(--accent); color: var(--accent); }
+
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
             .bg-gradient { animation: none; }
@@ -673,14 +768,15 @@
     <header class="app-header">
         <div class="brand">Zenıth Focus</div>
         <div class="header-actions">
+            <button class="theme-toggle" id="lang-btn" aria-label="Dil değiştir">🌐 TR</button>
             <button class="theme-toggle" id="theme-btn" aria-label="Tema değiştir">🌙 GECE MODU</button>
             <button class="stats-toggle" id="stats-btn" aria-label="İstatistikler">📊 İSTATİSTİKLER</button>
         </div>
     </header>
 
     <!-- Mobile-only buttons -->
-    <button class="theme-toggle mobile-only" id="theme-btn-mobile" style="position:fixed;top:15px;right:15px;z-index:20;display:none;" aria-label="Tema değiştir">🌙</button>
-    <button class="stats-toggle mobile-only" id="stats-btn-mobile" style="position:fixed;top:15px;left:15px;z-index:20;display:none;" aria-label="İstatistikler">📊</button>
+    <button class="theme-toggle mobile-only" id="theme-btn-mobile" aria-label="Tema değiştir">🌙</button>
+    <button class="stats-toggle mobile-only" id="stats-btn-mobile" aria-label="İstatistikler">📊</button>
 
     <main class="zenith-app">
         <div class="brand-name">Zenıth Focus</div>
@@ -688,10 +784,10 @@
         <!-- Left Column - Timer -->
         <div class="timer-section">
             <div class="mode-selector" role="group" aria-label="Timer modu seç">
-                <button class="mode-btn active" data-mode="focus" data-time="25" aria-pressed="true">ODAK (25 dk)</button>
-                <button class="mode-btn" data-mode="short" data-time="5" aria-pressed="false">KISA MOLA (5 dk)</button>
-                <button class="mode-btn" data-mode="long" data-time="15" aria-pressed="false">UZUN MOLA (15 dk)</button>
-                <button class="mode-btn" data-mode="custom" data-time="0" aria-pressed="false">ÖZEL</button>
+                <button class="mode-btn active" data-mode="focus" data-time="25" aria-pressed="true" data-i18n="modeFocus">ODAK (25 dk)</button>
+                <button class="mode-btn" data-mode="short" data-time="5" aria-pressed="false" data-i18n="modeShort">KISA MOLA (5 dk)</button>
+                <button class="mode-btn" data-mode="long" data-time="15" aria-pressed="false" data-i18n="modeLong">UZUN MOLA (15 dk)</button>
+                <button class="mode-btn" data-mode="custom" data-time="0" aria-pressed="false" data-i18n="modeCustom">ÖZEL</button>
             </div>
 
             <div class="custom-timer-input" id="custom-timer-container" style="display: none;">
@@ -712,9 +808,40 @@
             </div>
 
             <div class="control-group">
-                <button class="btn btn-main" id="start-btn" aria-label="Timer'ı başlat">Start Focus</button>
+                <button class="btn btn-main" id="start-btn" aria-label="Timer'ı başlat" data-i18n="startFocus">ODAK BAŞLAT</button>
                 <button class="btn btn-icon" id="reset-btn" aria-label="Timer'ı sıfırla">↺</button>
             </div>
+
+            <!-- Günlük Hedef -->
+            <div class="daily-goal-section">
+                <div class="daily-goal-header">
+                    <span class="track-label" data-i18n="goalLabel">🎯 GÜNLÜK HEDEF</span>
+                    <div class="goal-controls">
+                        <button class="cycle-btn" id="goal-dec">−</button>
+                        <span id="goal-count">4</span>
+                        <button class="cycle-btn" id="goal-inc">+</button>
+                        <span class="cycle-label" data-i18n="goalUnit">seans</span>
+                    </div>
+                </div>
+                <div class="goal-progress-bar">
+                    <div class="goal-progress-fill" id="goal-progress-fill"></div>
+                </div>
+                <div class="goal-progress-label" id="goal-progress-label">0 / 4 seans</div>
+            </div>
+
+            <!-- Görev Listesi -->
+            <div class="task-section">
+                <div class="task-header">
+                    <span class="track-label" data-i18n="taskLabel">📋 GÖREVLER</span>
+                    <span class="task-count" id="task-count">0/0</span>
+                </div>
+                <div class="task-input-row">
+                    <input type="text" id="task-input" maxlength="60" data-i18n-placeholder="taskPlaceholder" placeholder="Yeni görev ekle..." aria-label="Görev ekle">
+                    <button class="custom-link-save" id="task-add"><i class="fas fa-plus"></i></button>
+                </div>
+                <ul class="task-list" id="task-list"></ul>
+            </div>
+
         </div>
 
         <!-- Right Column - Music & Settings -->
@@ -741,6 +868,16 @@
             </div>
 
             <div class="youtube-container" id="youtube-container">
+                <div class="yt-presets">
+                    <button class="yt-preset-btn active" data-vid="jfKfPfyJRdk">🎵 Lo-Fi</button>
+                    <button class="yt-preset-btn" data-vid="4oStw0r33so">🌿 Nature</button>
+                    <button class="yt-preset-btn" data-vid="kgx4WGK0oNU">☕ Jazz</button>
+                    <button class="yt-preset-btn" data-vid="custom">✏️ Özel</button>
+                </div>
+                <div class="yt-custom-input" id="yt-custom-input" style="display:none;">
+                    <input type="text" id="yt-link-input" placeholder="YouTube video/playlist URL yapıştır..." aria-label="YouTube URL">
+                    <button class="custom-link-save" id="yt-link-save"><i class="fas fa-check"></i></button>
+                </div>
                 <div id="youtube-player"></div>
             </div>
 
@@ -751,9 +888,14 @@
             </div>
 
             <div class="external-player" id="apple-player">
-                <a href="https://music.apple.com/tr/playlist/focus/pl.4a4f2a3a8e2a4b3" target="_blank" class="apple-link">
-                    <i class="fab fa-apple"></i> Apple Music'te Focus playlist'i aç
+                <div class="custom-link-input" id="apple-link-input-container">
+                    <input type="url" id="apple-link-input" placeholder="Apple Music playlist linkini yapıştır..." aria-label="Apple Music playlist URL">
+                    <button class="custom-link-save" id="apple-link-save"><i class="fas fa-check"></i></button>
+                </div>
+                <a href="#" id="apple-link-open" target="_blank" class="apple-link" style="display:none;">
+                    <i class="fab fa-apple"></i> Apple Music'te aç
                 </a>
+                <p class="custom-link-hint" id="apple-link-hint">Bir Apple Music playlist linki girin</p>
             </div>
 
             <div class="mixer-panel" id="local-mixer" aria-label="Ses mixer'ı">
@@ -775,12 +917,27 @@
                 </div>
             </div>
 
+            <div class="cycle-setting">
+                <span class="track-label">🔁 DÖNGÜ</span>
+                <div class="cycle-controls">
+                    <button class="cycle-btn" id="cycle-dec">−</button>
+                    <span id="cycle-count">4</span>
+                    <button class="cycle-btn" id="cycle-inc">+</button>
+                    <span class="cycle-label">seansta uzun mola</span>
+                </div>
+            </div>
+
             <div class="notification-prompt" id="notification-prompt">
                 <button class="notification-btn" id="notification-btn">🔔 Bildirimlere İzin Ver</button>
             </div>
 
             <div class="footer">
                 TAMAMLANAN OTURUMLAR: <span id="streak">0</span>
+            </div>
+            <div class="shortcuts-hint" id="shortcuts-hint">
+                <span class="shortcut-key">Space</span> <span data-i18n="shortcutStart">Başlat/Duraklat</span>
+                &nbsp;·&nbsp;
+                <span class="shortcut-key">Esc</span> <span data-i18n="shortcutEsc">Sıfırla</span>
             </div>
         </div>
     </main>
@@ -798,13 +955,13 @@
     <div class="stats-panel" id="stats-panel">
         <div class="stats-content">
             <div class="stats-header">
-                <h2>📊 İstatistikler</h2>
+                <h2 data-i18n="statsTitle">📊 İstatistikler</h2>
                 <button class="stats-close" id="stats-close">✕</button>
             </div>
             <div class="stats-summary">
                 <div class="stats-card">
                     <div class="stats-card-value" id="today-minutes">0</div>
-                    <div class="stats-card-label">Bugünkü Dakika</div>
+                    <div class="stats-card-label">Bugün (dk)</div>
                 </div>
                 <div class="stats-card">
                     <div class="stats-card-value" id="total-sessions">0</div>
@@ -812,11 +969,19 @@
                 </div>
                 <div class="stats-card">
                     <div class="stats-card-value" id="week-minutes">0</div>
-                    <div class="stats-card-label">Bu Hafta</div>
+                    <div class="stats-card-label">Bu Hafta (dk)</div>
                 </div>
                 <div class="stats-card">
                     <div class="stats-card-value" id="avg-session">0</div>
-                    <div class="stats-card-label">ort. Dakika</div>
+                    <div class="stats-card-label">Ort. Oturum (dk)</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-card-value" id="best-day">0</div>
+                    <div class="stats-card-label">En İyi Gün (dk)</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-card-value" id="streak-days">0</div>
+                    <div class="stats-card-label">Gün Serisi 🔥</div>
                 </div>
             </div>
             <div class="stats-chart-title">Son 7 Gün</div>
@@ -825,35 +990,33 @@
     </div>
 
     <!-- Audio Files -->
+    <!-- Ses dosyaları: assets/ klasörüne koyun (örn: assets/rain.mp3) -->
+    <!-- Lisans: Mixkit Free Sound Effects License — ticari kullanıma açık, attribution gerekmez -->
+    <!-- Kaynak: https://mixkit.co/free-sound-effects/ -->
     <audio id="audio-rain" loop preload="auto">
+        <source src="assets/rain.mp3" type="audio/mpeg">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3" type="audio/mpeg">
     </audio>
     <audio id="audio-forest" loop preload="auto">
+        <source src="assets/forest.mp3" type="audio/mpeg">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-forest-birds-ambience-1210.mp3" type="audio/mpeg">
     </audio>
     <audio id="audio-fire" loop preload="auto">
+        <source src="assets/fire.mp3" type="audio/mpeg">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-campfire-crackling-1288.mp3" type="audio/mpeg">
     </audio>
     <audio id="audio-cafe" loop preload="auto">
+        <source src="assets/cafe.mp3" type="audio/mpeg">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-restaurant-crowd-talking-444.mp3" type="audio/mpeg">
     </audio>
     <audio id="audio-complete" preload="auto">
+        <source src="assets/complete.mp3" type="audio/mpeg">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3" type="audio/mpeg">
     </audio>
 
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <script>
-        // Mobile button handling for desktop
-        const isDesktop = window.innerWidth >= 900;
-        
-        if (!isDesktop) {
-            document.getElementById('theme-btn').style.display = 'none';
-            document.getElementById('stats-btn').style.display = 'none';
-            document.getElementById('theme-btn-mobile').style.display = 'block';
-            document.getElementById('stats-btn-mobile').style.display = 'block';
-        }
-
         // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -890,6 +1053,70 @@
             localStorage.setItem('zenith_install_dismissed', 'true');
         });
 
+        // ── i18n ──────────────────────────────────────────
+        const i18n = {
+            tr: {
+                modeFocus:    'ODAK (25 dk)',
+                modeShort:    'KISA MOLA (5 dk)',
+                modeLong:     'UZUN MOLA (15 dk)',
+                modeCustom:   'ÖZEL',
+                startFocus:   'ODAK BAŞLAT',
+                startBreak:   'MOLA BAŞLAT',
+                pause:        '⏸ Duraklat',
+                themeDay:     '☀️ GÜNDÜZ',
+                themeNight:   '🌙 GECE',
+                statsBtn:     '📊 İSTATİSTİKLER',
+                statsTitle:   '📊 İstatistikler',
+                labelFocus:   'ODAK',
+                labelShort:   'KISA MOLA',
+                labelLong:    'UZUN MOLA',
+                labelCustom:  'ÖZEL',
+                streakLabel:  'TAMAMLANAN OTURUMLAR',
+                cycleLabel:   'seansta uzun mola',
+                notifBtn:     '🔔 Bildirimlere İzin Ver',
+                installText:  "Zenith Focus'u uygulama olarak yükleyin",
+                installAccept:'Yükle',
+                installDismiss:'Kapat',
+                langBtn:      '🌐 TR',
+                taskLabel:    '📋 GÖREVLER',
+                taskPlaceholder: 'Yeni görev ekle...',
+                goalLabel:    '🎯 GÜNLÜK HEDEF',
+                goalUnit:     'seans',
+                shortcutStart:'Başlat/Duraklat',
+                shortcutEsc:  'Sıfırla',
+            },
+            en: {
+                modeFocus:    'FOCUS (25 min)',
+                modeShort:    'SHORT BREAK (5 min)',
+                modeLong:     'LONG BREAK (15 min)',
+                modeCustom:   'CUSTOM',
+                startFocus:   'START FOCUS',
+                startBreak:   'START BREAK',
+                pause:        '⏸ Pause',
+                themeDay:     '☀️ DAY',
+                themeNight:   '🌙 NIGHT',
+                statsBtn:     '📊 STATS',
+                statsTitle:   '📊 Statistics',
+                labelFocus:   'FOCUS',
+                labelShort:   'SHORT BREAK',
+                labelLong:    'LONG BREAK',
+                labelCustom:  'CUSTOM',
+                streakLabel:  'COMPLETED SESSIONS',
+                cycleLabel:   'sessions before long break',
+                notifBtn:     '🔔 Enable Notifications',
+                installText:  'Install Zenith Focus as an app',
+                installAccept:'Install',
+                installDismiss:'Dismiss',
+                langBtn:      '🌐 EN',
+                taskLabel:    '📋 TASKS',
+                taskPlaceholder: 'Add a new task...',
+                goalLabel:    '🎯 DAILY GOAL',
+                goalUnit:     'sessions',
+                shortcutStart:'Start/Pause',
+                shortcutEsc:  'Reset',
+            }
+        };
+
         // App Class
         class ZenithApp {
             constructor() {
@@ -908,12 +1135,18 @@
                 this.interval = null;
                 this.settingsKey = 'zenith_settings_v1';
                 this.theme = 'dark';
+                this.lang = localStorage.getItem('zenith_lang') || 'tr';
                 this.sessions = 0;
+                this.focusCount = 0; // Pomodoro döngüsü sayacı
+                this.longBreakInterval = 4;
+                this.dailyGoal = 4;
+                this.tasks = []; // kaç odak seansından sonra uzun mola
                 this.audioLoaded = {};
                 this.currentSource = 'local';
                 this.youtubePlayer = null;
                 this.youtubeApiReady = false;
                 this.pendingYoutubeInit = false;
+                this.currentYtVideoId = localStorage.getItem('zenith_yt_video') || 'jfKfPfyJRdk';
                 this.sessionHistory = [];
                 
                 this.presets = {
@@ -937,6 +1170,7 @@
                     timerMode: document.getElementById('timer-mode'),
                     startBtn: document.getElementById('start-btn'),
                     resetBtn: document.getElementById('reset-btn'),
+                    langBtn: document.getElementById('lang-btn'),
                     themeBtn: document.getElementById('theme-btn'),
                     themeBtnMobile: document.getElementById('theme-btn-mobile'),
                     statsBtn: document.getElementById('stats-btn'),
@@ -957,10 +1191,32 @@
                     customTimerContainer: document.getElementById('custom-timer-container'),
                     customMinutes: document.getElementById('custom-minutes'),
                     customWarning: document.getElementById('custom-warning'),
+                    cycleCount: document.getElementById('cycle-count'),
+                    cycleDec: document.getElementById('cycle-dec'),
+                    cycleInc: document.getElementById('cycle-inc'),
+                    goalCount: document.getElementById('goal-count'),
+                    goalDec: document.getElementById('goal-dec'),
+                    goalInc: document.getElementById('goal-inc'),
+                    goalFill: document.getElementById('goal-progress-fill'),
+                    goalLabel: document.getElementById('goal-progress-label'),
+                    taskInput: document.getElementById('task-input'),
+                    taskAdd: document.getElementById('task-add'),
+                    taskList: document.getElementById('task-list'),
+                    taskCount: document.getElementById('task-count'),
+                    ytCustomInput: document.getElementById('yt-custom-input'),
+                    ytLinkInput: document.getElementById('yt-link-input'),
+                    ytLinkSave: document.getElementById('yt-link-save'),
+                    ytPresetBtns: document.querySelectorAll('.yt-preset-btn'),
+                    appleLinkInput: document.getElementById('apple-link-input'),
+                    appleLinkSave: document.getElementById('apple-link-save'),
+                    appleLinkOpen: document.getElementById('apple-link-open'),
+                    appleLinkHint: document.getElementById('apple-link-hint'),
                     todayMinutes: document.getElementById('today-minutes'),
                     totalSessions: document.getElementById('total-sessions'),
                     weekMinutes: document.getElementById('week-minutes'),
                     avgSession: document.getElementById('avg-session'),
+                    bestDay: document.getElementById('best-day'),
+                    streakDays: document.getElementById('streak-days'),
                     statsChart: document.getElementById('stats-chart')
                 };
 
@@ -968,9 +1224,87 @@
                 this.migrateSettings();
                 this.loadSettings();
                 this.loadSessionHistory();
+                this.loadTasks();
                 this.updateStreak();
+                this.updateGoalProgress();
                 this.checkNotificationPermission();
                 this.preloadAudio();
+                this.loadAppleLink();
+                this.applyLang();
+            }
+
+            toggleLang() {
+                this.lang = this.lang === 'tr' ? 'en' : 'tr';
+                localStorage.setItem('zenith_lang', this.lang);
+                this.applyLang();
+            }
+
+            applyLang() {
+                const t = i18n[this.lang];
+
+                // data-i18n attribute'lu tüm elementleri güncelle
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.dataset.i18n;
+                    if (t[key]) el.textContent = t[key];
+                });
+
+                // Dinamik buton metinleri
+                if (this.dom.langBtn) this.dom.langBtn.textContent = t.langBtn;
+                if (this.dom.statsBtn) this.dom.statsBtn.textContent = t.statsBtn;
+                if (this.dom.statsBtnMobile) this.dom.statsBtnMobile.textContent = '📊';
+                if (this.dom.notificationBtn) this.dom.notificationBtn.textContent = t.notifBtn;
+
+                // Tema butonu
+                const isNight = this.theme === 'dark';
+                if (this.dom.themeBtn) this.dom.themeBtn.textContent = isNight ? t.themeNight : t.themeDay;
+
+                // Timer mode label
+                this.modes.focus.label  = t.labelFocus;
+                this.modes.short.label  = t.labelShort;
+                this.modes.long.label   = t.labelLong;
+                this.modes.custom.label = t.labelCustom;
+                if (this.dom.timerMode) this.dom.timerMode.textContent = this.modes[this.currentMode].label;
+
+                // Start butonu
+                const isRunning = this.isRunning;
+                if (isRunning) {
+                    this.dom.startBtn.textContent = t.pause;
+                } else {
+                    this.dom.startBtn.textContent = this.currentMode === 'focus' || this.currentMode === 'custom' ? t.startFocus : t.startBreak;
+                }
+
+                // Streak label
+                const streakEl = this.dom.streak?.parentElement;
+                if (streakEl) streakEl.innerHTML = `${t.streakLabel}: <span id="streak">${this.sessions}</span>`;
+
+                // Cycle label
+                const cycleLabelEl = document.querySelector('.cycle-label');
+                if (cycleLabelEl) cycleLabelEl.textContent = t.cycleLabel;
+
+                // Task input placeholder
+                if (this.dom.taskInput) this.dom.taskInput.placeholder = t.taskPlaceholder;
+
+                // Goal progress label güncelle
+                this.updateGoalProgress();
+
+                // Install prompt
+                const installP = document.querySelector('.install-prompt p');
+                if (installP) installP.textContent = t.installText;
+                const installAccept = document.getElementById('install-accept');
+                if (installAccept) installAccept.textContent = t.installAccept;
+                const installDismiss = document.getElementById('install-dismiss');
+                if (installDismiss) installDismiss.textContent = t.installDismiss;
+            }
+
+            loadAppleLink() {
+                const saved = localStorage.getItem('zenith_apple_link');
+                if (saved && this.dom.appleLinkInput && this.dom.appleLinkOpen) {
+                    this.dom.appleLinkInput.value = saved;
+                    this.dom.appleLinkOpen.href = saved;
+                    this.dom.appleLinkOpen.style.display = 'flex';
+                    this.dom.appleLinkHint.textContent = '✓ Link kaydedildi';
+                    this.dom.appleLinkHint.style.color = 'var(--accent)';
+                }
             }
 
             applyPreset(presetName) {
@@ -1044,20 +1378,58 @@
                 return days;
             }
 
+            getBestDay() {
+                // Tüm zamanların en yüksek dakika günü
+                const dayMap = {};
+                this.sessionHistory
+                    .filter(s => s.mode === 'focus' || s.mode === 'custom')
+                    .forEach(s => {
+                        const d = new Date(s.timestamp);
+                        const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+                        dayMap[key] = (dayMap[key] || 0) + Math.floor(s.duration / 60);
+                    });
+                return Object.values(dayMap).length > 0 ? Math.max(...Object.values(dayMap)) : 0;
+            }
+
+            getStreakDays() {
+                // Kaç gün üst üste en az 1 odak seansı yapıldı
+                let streak = 0;
+                const today = new Date();
+                for (let i = 0; i < 365; i++) {
+                    const d = new Date(today);
+                    d.setDate(d.getDate() - i);
+                    d.setHours(0, 0, 0, 0);
+                    const dayStart = d.getTime();
+                    const dayEnd = dayStart + 86400000;
+                    const hasFocus = this.sessionHistory.some(
+                        s => s.timestamp >= dayStart && s.timestamp < dayEnd && (s.mode === 'focus' || s.mode === 'custom')
+                    );
+                    if (hasFocus) { streak++; } else { break; }
+                }
+                return streak;
+            }
+
             updateStats() {
                 const todayMins = this.getTodayMinutes();
                 const weekMins = this.getWeekMinutes();
-                const totalFocusSessions = this.sessionHistory.filter(s => s.mode === 'focus' || s.mode === 'custom').length;
-                const avgMins = totalFocusSessions > 0 ? Math.round(weekMins / 7) : 0;
-                
+                const focusSessions = this.sessionHistory.filter(s => s.mode === 'focus' || s.mode === 'custom');
+                const totalFocusSessions = focusSessions.length;
+
+                // Gerçek ortalama oturum süresi (dakika)
+                const avgMins = totalFocusSessions > 0
+                    ? Math.round(focusSessions.reduce((sum, s) => sum + s.duration, 0) / totalFocusSessions / 60)
+                    : 0;
+
                 this.dom.todayMinutes.textContent = todayMins;
                 this.dom.totalSessions.textContent = totalFocusSessions;
                 this.dom.weekMinutes.textContent = weekMins;
                 this.dom.avgSession.textContent = avgMins;
-                
+                this.dom.bestDay.textContent = this.getBestDay();
+                this.dom.streakDays.textContent = this.getStreakDays();
+
                 const last7Days = this.getLast7Days();
                 const maxMinutes = Math.max(...last7Days.map(d => d.minutes), 1);
-                
+
                 this.dom.statsChart.innerHTML = last7Days.map(day => {
                     const height = Math.max((day.minutes / maxMinutes) * 80, 4);
                     return `<div class="chart-bar-container"><div class="chart-bar-value">${day.minutes}</div><div class="chart-bar" style="height: ${height}px;"></div><div class="chart-bar-label">${day.label}</div></div>`;
@@ -1090,9 +1462,6 @@
                     if (settings.theme) {
                         this.theme = settings.theme;
                         this.dom.body.setAttribute('data-theme', this.theme);
-                        const themeBtnText = this.theme === 'dark' ? '🌙 GECE MODU' : '☀️ GÜNDÜZ MODU';
-                        this.dom.themeBtn.innerText = themeBtnText;
-                        if (this.dom.themeBtnMobile) this.dom.themeBtnMobile.innerText = this.theme === 'dark' ? '🌙' : '☀️';
                     }
                     
                     if (settings.sessions) this.sessions = settings.sessions;
@@ -1104,6 +1473,16 @@
                     }
                     
                     if (settings.source) this.setSource(settings.source);
+
+                    if (settings.longBreakInterval && settings.longBreakInterval >= 2 && settings.longBreakInterval <= 8) {
+                        this.longBreakInterval = settings.longBreakInterval;
+                        if (this.dom.cycleCount) this.dom.cycleCount.textContent = this.longBreakInterval;
+                    }
+
+                    if (settings.dailyGoal && settings.dailyGoal >= 1 && settings.dailyGoal <= 12) {
+                        this.dailyGoal = settings.dailyGoal;
+                        if (this.dom.goalCount) this.dom.goalCount.textContent = this.dailyGoal;
+                    }
                     
                     if (settings.volumes) {
                         this.dom.sliders.forEach(s => {
@@ -1132,7 +1511,9 @@
                     source: this.currentSource,
                     sessions: this.sessions,
                     volumes: volumes,
-                    customTime: this.customTime
+                    customTime: this.customTime,
+                    longBreakInterval: this.longBreakInterval,
+                    dailyGoal: this.dailyGoal
                 };
                 localStorage.setItem(this.settingsKey, JSON.stringify(settings));
             }
@@ -1140,6 +1521,7 @@
             bindEvents() {
                 this.dom.startBtn.onclick = () => this.toggleTimer();
                 this.dom.resetBtn.onclick = () => this.resetTimer();
+                if (this.dom.langBtn) this.dom.langBtn.onclick = () => this.toggleLang();
                 
                 // Handle both desktop and mobile theme buttons
                 this.dom.themeBtn.onclick = () => this.toggleTheme();
@@ -1155,6 +1537,39 @@
                 this.dom.customMinutes.oninput = (e) => this.handleCustomTime(e);
                 this.dom.customMinutes.onchange = (e) => this.handleCustomTime(e);
                 this.dom.sourceBtns.forEach(btn => btn.onclick = () => this.setSource(btn.dataset.source));
+                
+                // Apple Music custom link
+                if (this.dom.appleLinkSave) {
+                    this.dom.appleLinkSave.onclick = () => this.saveAppleLink();
+                }
+                if (this.dom.appleLinkInput) {
+                    this.dom.appleLinkInput.onkeydown = (e) => { if (e.key === 'Enter') this.saveAppleLink(); };
+                }
+
+                // Döngü ayarı
+                this.dom.cycleDec.onclick = () => this.updateCycleInterval(-1);
+                this.dom.cycleInc.onclick = () => this.updateCycleInterval(1);
+
+                // Günlük hedef
+                this.dom.goalDec.onclick = () => this.updateDailyGoal(-1);
+                this.dom.goalInc.onclick = () => this.updateDailyGoal(1);
+
+                // Görev listesi
+                this.dom.taskAdd.onclick = () => this.addTask();
+                this.dom.taskInput.onkeydown = (e) => { if (e.key === 'Enter') this.addTask(); };
+
+                // YouTube presets & custom link
+                if (this.dom.ytPresetBtns) {
+                    this.dom.ytPresetBtns.forEach(btn => {
+                        btn.onclick = () => this.selectYtPreset(btn);
+                    });
+                }
+                if (this.dom.ytLinkSave) {
+                    this.dom.ytLinkSave.onclick = () => this.saveYtCustomLink();
+                }
+                if (this.dom.ytLinkInput) {
+                    this.dom.ytLinkInput.onkeydown = (e) => { if (e.key === 'Enter') this.saveYtCustomLink(); };
+                }
                 
                 this.dom.presetBtns.forEach(btn => btn.onclick = () => this.applyPreset(btn.dataset.preset));
                 
@@ -1180,10 +1595,10 @@
 
             handleEscape() {
                 const modal = document.querySelector('.finish-modal');
-                if (modal) { modal.remove(); this.resetTimer(); }
+                if (modal) { modal.remove(); }
                 else if (this.isRunning) this.toggleTimer();
                 else this.resetTimer();
-                
+
                 if (this.dom.statsPanel.classList.contains('active')) {
                     this.dom.statsPanel.classList.remove('active');
                 }
@@ -1234,7 +1649,8 @@
                     btn.setAttribute('aria-pressed', isActive);
                 });
                 
-                this.dom.startBtn.innerText = mode === 'focus' ? 'Start Focus' : 'Start Break';
+                const t = i18n[this.lang];
+                this.dom.startBtn.textContent = (mode === 'focus' || mode === 'custom') ? t.startFocus : t.startBreak;
                 this.updateDisplay();
                 this.resetProgressRing();
                 this.updateProgress();
@@ -1294,9 +1710,26 @@
                 this.youtubePlayer = new YT.Player('youtube-player', {
                     height: '100%',
                     width: '100%',
-                    playerVars: { 'autoplay': 0, 'controls': 1, 'loop': 1, 'playlist': 'jfKfPfyJRdk', 'modestbranding': 1, 'rel': 0 },
+                    videoId: this.currentYtVideoId,
+                    playerVars: { 'autoplay': 0, 'controls': 1, 'loop': 1, 'playlist': this.currentYtVideoId, 'modestbranding': 1, 'rel': 0 },
                     events: { 'onReady': (event) => event.target.setVolume(50) }
                 });
+
+                // Kaydedilmiş video ile eşleşen preset butonunu aktif et
+                if (this.dom.ytPresetBtns) {
+                    let matched = false;
+                    this.dom.ytPresetBtns.forEach(b => {
+                        const isActive = b.dataset.vid === this.currentYtVideoId;
+                        b.classList.toggle('active', isActive);
+                        if (isActive) matched = true;
+                    });
+                    // Özel bir video ise "Özel" butonunu aktif et
+                    if (!matched) {
+                        this.dom.ytPresetBtns.forEach(b => {
+                            if (b.dataset.vid === 'custom') b.classList.add('active');
+                        });
+                    }
+                }
             }
 
             stopAllAudio() {
@@ -1312,16 +1745,22 @@
 
             toggleTheme() {
                 this.theme = this.theme === 'dark' ? 'light' : 'dark';
+
+                // Transition'ı sadece geçiş süresince aktif et
+                this.dom.body.classList.add('theme-transitioning');
+                setTimeout(() => this.dom.body.classList.remove('theme-transitioning'), 420);
+
                 this.dom.body.setAttribute('data-theme', this.theme);
-                const themeBtnText = this.theme === 'dark' ? '🌙 GECE MODU' : '☀️ GÜNDÜZ MODU';
-                this.dom.themeBtn.innerText = themeBtnText;
-                if (this.dom.themeBtnMobile) this.dom.themeBtnMobile.innerText = this.theme === 'dark' ? '🌙' : '☀️';
+                const t = i18n[this.lang];
+                if (this.dom.themeBtn) this.dom.themeBtn.textContent = this.theme === 'dark' ? t.themeNight : t.themeDay;
+                if (this.dom.themeBtnMobile) this.dom.themeBtnMobile.textContent = this.theme === 'dark' ? '🌙' : '☀️';
                 this.saveSettings();
             }
 
             toggleTimer() {
                 this.isRunning = !this.isRunning;
-                this.dom.startBtn.innerText = this.isRunning ? '⏸ Pause' : (this.currentMode === 'focus' ? 'Start Focus' : 'Start Break');
+                const t = i18n[this.lang];
+                this.dom.startBtn.textContent = this.isRunning ? t.pause : (this.currentMode === 'focus' || this.currentMode === 'custom' ? t.startFocus : t.startBreak);
                 this.dom.timer.classList.toggle('active-timer', this.isRunning);
 
                 if (this.isRunning) {
@@ -1352,7 +1791,8 @@
                 
                 this.timeLeft = this.modes[this.currentMode].time;
                 this.totalTime = this.timeLeft;
-                this.dom.startBtn.innerText = this.currentMode === 'focus' ? 'Start Focus' : 'Start Break';
+                const tr = i18n[this.lang];
+                this.dom.startBtn.textContent = (this.currentMode === 'focus' || this.currentMode === 'custom') ? tr.startFocus : tr.startBreak;
                 this.dom.timer.classList.remove('active-timer');
                 this.updateDisplay();
                 this.resetProgressRing();
@@ -1436,62 +1876,92 @@
             finish() {
                 clearInterval(this.interval);
                 this.isRunning = false;
-                
+
                 this.playCompleteSound();
                 this.sendNotification();
-                
-                if (this.currentMode === 'focus' || this.currentMode === 'custom') {
+
+                this.dom.timer.classList.add('active-timer');
+                setTimeout(() => this.dom.timer.classList.remove('active-timer'), 2000);
+
+                this.pauseMusic();
+
+                const isFocus = this.currentMode === 'focus' || this.currentMode === 'custom';
+
+                if (isFocus) {
                     this.sessions++;
+                    this.focusCount++;
                     this.addSession(this.currentMode, this.modes[this.currentMode].time);
                     this.saveSettings();
                     this.updateStreak();
+                    this.updateGoalProgress();
+
+                    const nextMode = (this.focusCount % this.longBreakInterval === 0) ? 'long' : 'short';
+                    const remaining = this.longBreakInterval - (this.focusCount % this.longBreakInterval);
+                    const cycleInfo = nextMode === 'long'
+                        ? `${this.longBreakInterval} seans tamamlandı! Uzun molayı hak ettin.`
+                        : `Seans ${this.focusCount % this.longBreakInterval}/${this.longBreakInterval} — ${remaining} seans sonra uzun mola.`;
+
+                    // Otomatik geçiş — 3 saniye geri sayım ile
+                    this.autoTransition(nextMode, cycleInfo);
+                } else {
+                    if (this.currentMode === 'long') this.focusCount = 0;
+                    this.autoTransition('focus',`Toplam tamamlanan oturum: ${this.sessions}`);
                 }
-                
-                this.dom.timer.classList.add('active-timer');
-                setTimeout(() => this.dom.timer.classList.remove('active-timer'), 2000);
-                
-                this.pauseMusic();
-                
-                const message = this.currentMode === 'focus' || this.currentMode === 'custom'
-                    ? "🎉 Odaklanma seansı bitti! Harikasın!" 
-                    : "☕ Mola bitti! Hazır mısın?";
-                
-                this.showFinishModal(message);
             }
 
-            showFinishModal(message) {
+            autoTransition(nextMode, subMessage) {
                 const existing = document.querySelector('.finish-modal');
                 if (existing) existing.remove();
-                
+
                 const modal = document.createElement('div');
                 modal.className = 'finish-modal';
+                const isFocus = nextMode === 'focus';
+                const nextLabel = nextMode === 'long' ? '🏆 Uzun Mola' : nextMode === 'short' ? '☕ Kısa Mola' : '🎯 Odak Seansı';
+
                 modal.innerHTML = `
-                    <style>
-                        .finish-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s ease; }
-                        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-                        .finish-modal-content { background: var(--card); backdrop-filter: blur(40px); padding: 40px; border-radius: 30px; text-align: center; border: 1px solid var(--border); max-width: 300px; }
-                        .finish-modal h2 { color: var(--accent); margin-bottom: 15px; font-weight: 300; }
-                        .finish-modal p { color: var(--text-dim); margin-bottom: 25px; font-size: 14px; }
-                        .finish-modal button { background: var(--accent); color: white; border: none; padding: 12px 30px; border-radius: 15px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
-                    </style>
                     <div class="finish-modal-content">
-                        <h2>${this.currentMode === 'focus' || this.currentMode === 'custom' ? '🎯' : '☕'}</h2>
-                        <p>${message}</p>
-                        <p style="margin-top: 10px; color: var(--accent); font-weight: 600;">Toplam Oturum: ${this.sessions}</p>
-                        <button class="finish-modal-btn">Tamam</button>
+                        <h2>${isFocus ? '⚡' : '🎯'}</h2>
+                        <p>${isFocus ? 'Mola bitti! Odaklanmaya hazır mısın?' : 'Harika iş! Sıradaki aşama hazırlanıyor.'}</p>
+                        <p class="finish-sub">${subMessage}</p>
+                        <p class="finish-countdown"><span id="auto-countdown">5</span> saniye içinde ${nextLabel} başlıyor...</p>
+                        <div class="finish-modal-actions">
+                            <button class="finish-start-btn">Şimdi Başlat</button>
+                            <button class="finish-modal-dismiss">İptal Et</button>
+                        </div>
                     </div>
                 `;
                 document.body.appendChild(modal);
-                
-                const closeModalAndReset = () => {
+
+                let seconds = 5;
+                const countdownEl = modal.querySelector('#auto-countdown');
+                const countdownInterval = setInterval(() => {
+                    seconds--;
+                    if (countdownEl) countdownEl.textContent = seconds;
+                    if (seconds <= 0) {
+                        clearInterval(countdownInterval);
+                        startNext();
+                    }
+                }, 1000);
+
+                const startNext = () => {
+                    clearInterval(countdownInterval);
                     modal.remove();
                     document.removeEventListener('keydown', escHandler);
-                    this.resetTimer();
+                    this.setMode(nextMode);
+                    this.toggleTimer();
                 };
-                
-                modal.querySelector('.finish-modal-btn').addEventListener('click', closeModalAndReset);
-                
-                const escHandler = (e) => { if (e.code === 'Escape') closeModalAndReset(); };
+
+                const dismiss = () => {
+                    clearInterval(countdownInterval);
+                    modal.remove();
+                    document.removeEventListener('keydown', escHandler);
+                    this.setMode(nextMode);
+                };
+
+                modal.querySelector('.finish-start-btn').addEventListener('click', startNext);
+                modal.querySelector('.finish-modal-dismiss').addEventListener('click', dismiss);
+
+                const escHandler = (e) => { if (e.code === 'Escape') dismiss(); };
                 document.addEventListener('keydown', escHandler);
             }
 
@@ -1529,6 +1999,159 @@
                     audio.volume = 0.5;
                     audio.play().catch(err => console.log('Complete sound error:', err));
                 }
+            }
+
+            updateDailyGoal(delta) {
+                this.dailyGoal = Math.min(12, Math.max(1, this.dailyGoal + delta));
+                if (this.dom.goalCount) this.dom.goalCount.textContent = this.dailyGoal;
+                this.updateGoalProgress();
+                this.saveSettings();
+            }
+
+            updateGoalProgress() {
+                const done = this.getTodayMinutes() > 0 ? this.sessionHistory.filter(s => {
+                    const today = new Date(); today.setHours(0,0,0,0);
+                    return s.timestamp >= today.getTime() && (s.mode === 'focus' || s.mode === 'custom');
+                }).length : 0;
+
+                const pct = Math.min(100, (done / this.dailyGoal) * 100);
+                if (this.dom.goalFill) this.dom.goalFill.style.width = pct + '%';
+                const t = i18n[this.lang];
+                if (this.dom.goalLabel) this.dom.goalLabel.textContent = `${done} / ${this.dailyGoal} ${t.goalUnit || 'seans'}`;
+
+                // Hedef tamamlandıysa rengi değiştir
+                if (this.dom.goalFill) {
+                    this.dom.goalFill.style.background = pct >= 100 ? '#22c55e' : 'var(--accent)';
+                }
+            }
+
+            loadTasks() {
+                const saved = localStorage.getItem('zenith_tasks');
+                if (saved) this.tasks = JSON.parse(saved);
+                this.renderTasks();
+            }
+
+            saveTasks() {
+                localStorage.setItem('zenith_tasks', JSON.stringify(this.tasks));
+            }
+
+            addTask() {
+                const text = this.dom.taskInput.value.trim();
+                if (!text) return;
+                this.tasks.push({ id: Date.now(), text, done: false });
+                this.dom.taskInput.value = '';
+                this.saveTasks();
+                this.renderTasks();
+            }
+
+            toggleTask(id) {
+                const task = this.tasks.find(t => t.id === id);
+                if (task) { task.done = !task.done; this.saveTasks(); this.renderTasks(); }
+            }
+
+            deleteTask(id) {
+                this.tasks = this.tasks.filter(t => t.id !== id);
+                this.saveTasks();
+                this.renderTasks();
+            }
+
+            renderTasks() {
+                if (!this.dom.taskList) return;
+                this.dom.taskList.innerHTML = this.tasks.map(task => `
+                    <li class="task-item${task.done ? ' done' : ''}" data-id="${task.id}">
+                        <div class="task-checkbox">${task.done ? '✓' : ''}</div>
+                        <span class="task-text">${task.text}</span>
+                        <button class="task-delete" data-del="${task.id}" aria-label="Görevi sil">✕</button>
+                    </li>
+                `).join('');
+
+                // Event delegation
+                this.dom.taskList.onclick = (e) => {
+                    const item = e.target.closest('.task-item');
+                    if (!item) return;
+                    const id = Number(item.dataset.id);
+                    if (e.target.dataset.del) { this.deleteTask(Number(e.target.dataset.del)); }
+                    else { this.toggleTask(id); }
+                };
+
+                const done = this.tasks.filter(t => t.done).length;
+                if (this.dom.taskCount) this.dom.taskCount.textContent = `${done}/${this.tasks.length}`;
+            }
+
+            updateCycleInterval(delta) {
+                this.longBreakInterval = Math.min(8, Math.max(2, this.longBreakInterval + delta));
+                this.dom.cycleCount.textContent = this.longBreakInterval;
+                this.saveSettings();
+            }
+
+            selectYtPreset(btn) {
+                const vid = btn.dataset.vid;
+                this.dom.ytPresetBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                if (vid === 'custom') {
+                    this.dom.ytCustomInput.style.display = 'flex';
+                    return;
+                }
+
+                this.dom.ytCustomInput.style.display = 'none';
+                this.currentYtVideoId = vid;
+                localStorage.setItem('zenith_yt_video', vid);
+                this.reloadYoutubePlayer();
+            }
+
+            saveYtCustomLink() {
+                const raw = this.dom.ytLinkInput.value.trim();
+                const videoId = this.extractYouTubeId(raw);
+                if (!videoId) {
+                    this.dom.ytLinkInput.style.borderColor = '#ef4444';
+                    setTimeout(() => this.dom.ytLinkInput.style.borderColor = '', 1500);
+                    return;
+                }
+                this.currentYtVideoId = videoId;
+                localStorage.setItem('zenith_yt_video', videoId);
+                this.dom.ytCustomInput.style.display = 'none';
+                this.dom.ytPresetBtns.forEach(b => b.classList.toggle('active', b.dataset.vid === 'custom'));
+                this.reloadYoutubePlayer();
+            }
+
+            extractYouTubeId(url) {
+                const patterns = [
+                    /(?:v=|\/embed\/|\.be\/)([A-Za-z0-9_-]{11})/,
+                    /^([A-Za-z0-9_-]{11})$/
+                ];
+                for (const p of patterns) {
+                    const m = url.match(p);
+                    if (m) return m[1];
+                }
+                return null;
+            }
+
+            reloadYoutubePlayer() {
+                if (this.youtubePlayer && this.youtubePlayer.loadVideoById) {
+                    this.youtubePlayer.loadVideoById({ videoId: this.currentYtVideoId, suggestedQuality: 'small' });
+                } else {
+                    // Player henüz oluşturulmamışsa sıfırlayıp yeniden oluştur
+                    this.youtubePlayer = null;
+                    this.initYouTube();
+                }
+            }
+
+            saveAppleLink() {
+                const url = this.dom.appleLinkInput.value.trim();
+                if (!url) return;
+                
+                if (!url.startsWith('https://music.apple.com')) {
+                    this.dom.appleLinkHint.textContent = '⚠ Geçerli bir Apple Music linki giriniz';
+                    this.dom.appleLinkHint.style.color = '#ef4444';
+                    return;
+                }
+                
+                localStorage.setItem('zenith_apple_link', url);
+                this.dom.appleLinkOpen.href = url;
+                this.dom.appleLinkOpen.style.display = 'flex';
+                this.dom.appleLinkHint.textContent = '✓ Link kaydedildi';
+                this.dom.appleLinkHint.style.color = 'var(--accent)';
             }
 
             updateStreak() {
