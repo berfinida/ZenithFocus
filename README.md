@@ -1,5 +1,6 @@
-<div align="center">
 ![Zenith Focus Preview](preview.png)
+
+<div align="center">
 
 # ⚡ Zenith Focus
 
@@ -16,7 +17,7 @@ https://berfinida.github.io/ZenithFocus_Proje/
 
 # ✨ Overview
 
-**Zenith Focus** is a minimalist deep-work productivity application inspired by the **Pomodoro technique**.
+Zenith Focus is a minimalist **deep work productivity application** inspired by the Pomodoro technique.
 
 The goal of the project is simple:
 
