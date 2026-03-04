@@ -1,133 +1,153 @@
-# ⚡ Zenith Focus — Deep Work Suite
+<div align="center">
 
-> A Pomodoro-based focus app with ambient sounds, statistics, and PWA support. Works offline once installed.
+# ⚡ Zenith Focus
 
----
+### Deep Work • Minimal Design • Maximum Productivity
 
-## 🚀 Features
+A modern **focus and productivity web application** designed to help users enter deep work sessions with a clean and distraction-free environment.
 
-### ⏱ Timer
-- **4 modes:** Focus (25 min), Short Break (5 min), Long Break (15 min), Custom (1–180 min)
-- **Automatic Pomodoro cycle:** After each focus session, the next phase starts automatically with a 5-second countdown
-- **Adjustable cycle length:** Set how many focus sessions before a long break (2–8)
-- **Progress ring:** Visual SVG ring tracks time remaining
+🌐 **Live Demo**
+https://berfinida.github.io/ZenithFocus_Proje/
 
-### 🎵 Music & Sound
-| Source | Description |
-|--------|-------------|
-| **Local Mixer** | Mix Rain, Forest, Fire, and Café sounds independently |
-| **YouTube** | Built-in Lo-Fi, Nature, Jazz channels — or paste your own video link |
-| **Spotify** | Paste your own playlist link, opens in Spotify |
-| **Apple Music** | Paste your own playlist link, opens in Apple Music |
-
-**Built-in presets:** 🌧️ Deep Rain · 🌲 Forest Calm · ☕ Café Study
-
-### 📋 Task List
-- Add daily tasks, mark as done, delete
-- Persisted via `localStorage`
-
-### 🎯 Daily Goal
-- Set a session target between 1–12
-- Live progress bar
-- Turns green when the goal is reached
-- Updates automatically after each completed session
-
-### 📊 Statistics
-- Today's minutes · Total sessions · This week · Avg. session length
-- Best day ever · Current day streak 🔥
-- 7-day bar chart
-
-### 🌐 Multi-language
-- Turkish / English — switch with one click
-- All UI text updates instantly, preference is saved
-
-### 🔔 Notifications
-- Desktop notification on session/break end
-
-### 📱 PWA
-- Add to home screen (iOS, Android, desktop)
-- Service Worker for full offline support
-- 192×192 and 512×512 app icons
+</div>
 
 ---
 
-## 📁 File Structure
+# ✨ Overview
+
+**Zenith Focus** is a minimalist deep-work productivity application inspired by the **Pomodoro technique**.
+
+The goal of the project is simple:
+
+• help users focus on meaningful work
+• eliminate distractions
+• create a calm digital workspace
+
+The application combines a **focus timer**, **ambient sound environments**, and a **minimal UI design** to support long and productive work sessions.
+
+---
+
+# 🚀 Features
+
+⏱ **Focus Timer**
+
+Pomodoro-style timer designed for structured deep work sessions.
+
+🎧 **Ambient Sound Environment**
+
+Multiple background sound environments to improve concentration:
+
+* 🌧 Rain
+* ☕ Cafe
+* 🌲 Forest
+* 🔥 Fire
+
+🔔 **Session Completion Sound**
+
+Audio notification when a focus session ends.
+
+🧘 **Minimal Distraction-Free Interface**
+
+Clean UI designed to reduce distractions and improve mental clarity.
+
+📱 **Responsive Design**
+
+Works on desktop, tablet and mobile devices.
+
+⚡ **Progressive Web App (PWA)**
+
+The application can be installed like a native mobile app.
+
+---
+
+# 🎵 Ambient Sounds
+
+Zenith Focus includes multiple sound environments that can be used during focus sessions.
+
+| Sound  | Description                               |
+| ------ | ----------------------------------------- |
+| Rain   | Calm rain ambience for deep concentration |
+| Cafe   | Coffee shop background atmosphere         |
+| Forest | Natural forest ambience                   |
+| Fire   | Fireplace crackling sound                 |
+
+These environments help simulate real-world focus spaces.
+
+---
+
+# 🛠 Tech Stack
+
+| Technology       | Purpose                  |
+| ---------------- | ------------------------ |
+| HTML5            | Application structure    |
+| CSS3             | UI design and layout     |
+| JavaScript       | Application logic        |
+| Service Worker   | Offline capability       |
+| Web App Manifest | PWA installation support |
+
+The project intentionally avoids heavy frameworks to keep the application **fast and lightweight**.
+
+---
+
+# 📂 Project Structure
 
 ```
-zenith-focus/
-├── index.html          # Entire app (single file)
-├── manifest.json       # PWA manifest
-├── sw.js               # Service Worker
-├── icon-192.png        # App icon (192×192)
-├── icon-512.png        # App icon (512×512)
-└── assets/
-    ├── rain.mp3        # Rain ambience
-    ├── forest.mp3      # Forest ambience
-    ├── fire.mp3        # Fire crackling
-    ├── cafe.mp3        # Café ambience
-    └── complete.mp3    # Session complete sound
+ZenithFocus_Proje
+│
+├── assets
+│   ├── cafe.mp3
+│   ├── complete.mp3
+│   ├── fire.mp3
+│   ├── forest.mp3
+│   └── rain.mp3
+│
+├── icon-192.png
+├── icon-512.png
+├── index.html
+├── manifest.json
+├── sw.js
+└── README.md
 ```
 
 ---
 
-## ⚙️ Setup
+# 📱 Progressive Web App
 
-### Local development
+Zenith Focus supports **PWA installation**, allowing users to install the app directly on their device.
 
-Opening files directly in a browser blocks audio (CORS). Use a simple local server:
+This enables:
 
-```bash
-# Python
-python3 -m http.server 8080
-
-# Node.js
-npx serve .
-```
-
-Then open `http://localhost:8080` in your browser.
-
-### Deploying to a server
-
-Upload all files to your web server's root directory. No backend required — fully static.
-
-> **Note:** HTTPS is required for PWA installation and Service Worker functionality.
+• offline usage
+• faster loading
+• native-app-like experience
 
 ---
 
-## ⌨️ Keyboard Shortcuts
+# 🔮 Future Improvements
 
-| Shortcut | Action |
-|----------|--------|
-| `Space` | Start / Pause timer |
-| `Esc` | Reset timer / Close modal |
+Planned features for future versions:
 
----
-
-## 🎨 Theming
-
-- **Dark mode** (default): `#030305` background, `#a5b4fc` accent
-- **Light mode:** `#f8fafc` background, `#4f46e5` accent
-- Automatically detects system theme via `prefers-color-scheme`
-- Respects `prefers-reduced-motion`
+• focus analytics dashboard
+• daily and weekly productivity statistics
+• focus streak tracking
+• task management system
+• additional ambient sound environments
+• custom UI themes
 
 ---
 
-## 🔊 Sound License
+# 👩‍💻 Developer
 
-Audio files in the `assets/` folder are licensed under the [Mixkit Free Sound Effects License](https://mixkit.co/license/). Free for both personal and commercial use — no attribution required.
+**Berfin Nida Öztürk**
 
----
+GitHub
+https://github.com/berfinida
 
-## 🛠 Technical Notes
-
-- Pure vanilla JS — no framework, no build step
-- All data stored in `localStorage` (no server required)
-- YouTube integration via IFrame Player API
-- Fonts: [Outfit](https://fonts.google.com/specimen/Outfit) + [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono)
-- Icons: [Font Awesome 6](https://fontawesome.com/)
+LinkedIn
+https://www.linkedin.com/in/berfin-nida-%C3%B6zt%C3%BCrk-6a12131b7/
 
 ---
 
-## 📄 License
+# 📄 License
 
-MIT
+MIT License
