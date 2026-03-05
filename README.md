@@ -9,7 +9,7 @@
 A minimalist **deep work / focus web application** built with HTML, CSS and JavaScript.
 
 🌐 **Live Demo**
-https://berfinida.github.io/ZenithFocus_Proje/
+https://berfinida.github.io/ZenithFocus/
 
 </div>
 
