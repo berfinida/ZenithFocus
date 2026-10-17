@@ -1,6 +1,6 @@
 // All paths follow the registration scope, including GitHub Pages subdirectories.
 const CACHE_PREFIX = 'zenith-focus-';
-const CACHE_NAME = `${CACHE_PREFIX}v4`;
+const CACHE_NAME = `${CACHE_PREFIX}v5`;
 const scopeUrl = new URL(self.registration.scope);
 const assetUrl = path => new URL(path, scopeUrl).href;
 const ASSETS_TO_CACHE = [

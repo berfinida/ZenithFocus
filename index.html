@@ -5,1040 +5,213 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zenith Focus // Deep Work Suite</title>
     <meta name="description" content="Deep Work Suite - Odaklanma ve Pomodoro Timer">
-    <meta name="theme-color" content="#a5b4fc">
+    <meta name="theme-color" content="#f5f4ef">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
 
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;600&family=JetBrains+Mono:wght@200&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root {
-            --bg: #030305;
-            --accent: #a5b4fc;
-            --accent-glow: rgba(165, 180, 252, 0.25);
-            --card: rgba(15, 15, 25, 0.6);
-            --border: rgba(255, 255, 255, 0.07);
-            --text-main: #ffffff;
-            --text-dim: #64748b;
-            --progress-bg: rgba(255, 255, 255, 0.1);
-            --spotify: #1DB954;
-            --youtube: #FF0000;
-            --apple: #FA243C;
+        :root, [data-theme="light"] {
+            --bg: #f5f4ef; --card: #fdfcf9; --accent: #53765e; --accent-glow: #53765e18;
+            --text-main: #292e29; --text-dim: #7b8078; --border: #e5e6de;
+            --progress-bg: #e5e7de; --spotify: #267b47; --youtube: #ba5147; --apple: #ad5469;
         }
-
-        [data-theme="light"] {
-            --bg: #f8fafc;
-            --accent: #4f46e5;
-            --accent-glow: rgba(79, 70, 229, 0.15);
-            --card: rgba(255, 255, 255, 0.8);
-            --border: rgba(0, 0, 0, 0.05);
-            --text-main: #1e293b;
-            --text-dim: #64748b;
-            --progress-bg: rgba(0, 0, 0, 0.1);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-
-        :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-        .task-checkbox { cursor: pointer; background: transparent; color: var(--text-main); }
-        .task-item:focus-within .task-delete { opacity: 1; }
-        @media (hover: none) { .task-delete { opacity: 1; } }
-
-        /* Tema geçişi sırasında geçici olarak aktif edilir */
-        body.theme-transitioning,
-        body.theme-transitioning *,
-        body.theme-transitioning *::before,
-        body.theme-transitioning *::after {
-            transition: background 0.4s ease, background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease !important;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            font-family: 'Outfit', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 20px;
-        }
-
-        .bg-gradient {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 20% 20%, var(--accent-glow) 0%, transparent 40%),
-                        radial-gradient(circle at 80% 80%, var(--accent-glow) 0%, transparent 40%);
-            z-index: 1;
-            animation: gradientMove 15s ease-in-out infinite;
-        }
-
-        @keyframes gradientMove {
-            0%, 100% { transform: scale(1) translate(0, 0); }
-            50% { transform: scale(1.1) translate(-5%, -5%); }
-        }
-
-        /* Mobile-only butonlar CSS ile yönetilir */
-        .mobile-only {
-            position: fixed;
-            z-index: 20;
-            display: none;
-        }
-        #theme-btn-mobile { top: 15px; right: 15px; }
-        #stats-btn-mobile { top: 15px; left: 15px; }
-
-        @media (max-width: 899px) {
-            .mobile-only { display: block; }
-        }
-
-        /* Header toolbar for desktop */
-        .app-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            display: none;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 30px;
-            background: var(--card);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            z-index: 100;
-        }
-
-        .app-header .brand {
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--accent);
-        }
-
-        .app-header .header-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .theme-toggle, .stats-toggle {
-            background: var(--card);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 10px 15px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
-            transition: all 0.2s ease;
-        }
-
-        .theme-toggle:hover, .stats-toggle:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px var(--accent-glow);
-            border-color: var(--accent);
-        }
-
-        .install-prompt {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--card);
-            backdrop-filter: blur(40px);
-            border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 15px 20px;
-            z-index: 100;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        }
-
-        .install-prompt.show { display: block; }
-        .install-prompt p { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
-        .install-buttons { display: flex; gap: 10px; justify-content: center; }
-        .install-btn { padding: 8px 16px; border-radius: 10px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; }
-        .install-btn.accept { background: var(--accent); color: white; }
-        .install-btn.dismiss { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
-
-        .zenith-app {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 480px;
-            min-height: calc(100vh - 40px);
-            padding: 30px 25px;
-            background: var(--card);
-            backdrop-filter: blur(40px) saturate(160%);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            text-align: center;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.15);
-            margin: 10px 0;
-        }
-
-        .brand-name { font-size: 10px; font-weight: 600; letter-spacing: 6px; text-transform: uppercase; color: var(--accent); margin-bottom: 25px; }
-
-        .progress-ring-container { position: relative; width: 240px; height: 240px; margin: 0 auto; }
-        .progress-ring { width: 100%; height: 100%; transform: rotate(-90deg); display: block; }
-        .progress-ring__circle { transition: stroke-dashoffset 0.3s linear; }
-        .timer-wrapper { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-
-        #timer-display { font-family: 'JetBrains Mono', monospace; font-size: 56px; font-weight: 200; letter-spacing: -2px; line-height: 1; transition: transform 0.3s ease; }
-        .active-timer { transform: scale(1.05); color: var(--accent); }
-        .timer-mode { font-size: 11px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
-
-        .mode-selector { display: flex; gap: 6px; justify-content: center; margin-bottom: 25px; flex-wrap: wrap; }
-        .mode-btn { padding: 7px 14px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); border-radius: 18px; font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: inherit; }
-        .mode-btn:hover { border-color: var(--accent); color: var(--accent); }
-        .mode-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
-
-        .custom-timer-input { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; }
-        .custom-timer-input input { width: 55px; padding: 7px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text-main); font-size: 12px; font-family: inherit; text-align: center; }
-        .custom-timer-input span { font-size: 10px; color: var(--text-dim); }
-        .custom-warning { color: #ef4444; font-size: 9px; margin-top: 4px; display: none; }
-        .custom-warning.show { display: block; }
-
-        .control-group { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; }
-        .btn { border: none; border-radius: 18px; font-family: inherit; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .btn-main { flex: 2; height: 52px; background: var(--accent); color: white; font-size: 14px; }
-        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 10px 30px var(--accent-glow); }
-        .btn-icon { flex: 1; background: rgba(128, 128, 128, 0.05); border: 1px solid var(--border); color: var(--text-dim); font-size: 13px; }
-        .btn-icon:hover { border-color: var(--accent); color: var(--accent); }
-
-        .source-selector { display: flex; gap: 8px; justify-content: center; margin-bottom: 15px; flex-wrap: wrap; }
-        .source-btn { display: flex; align-items: center; gap: 5px; padding: 7px 12px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); border-radius: 12px; font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: inherit; }
-        .source-btn:hover { transform: scale(1.05); }
-        .source-btn.active { border-color: transparent; color: white; }
-        .source-btn.spotify.active { background: var(--spotify); }
-        .source-btn.youtube.active { background: var(--youtube); }
-        .source-btn.apple.active { background: var(--apple); }
-        .source-btn.local.active { background: var(--accent); }
-
-        .presets { display: flex; gap: 6px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap; }
-        .preset-btn { padding: 5px 10px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); border-radius: 10px; font-size: 9px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: inherit; }
-        .preset-btn:hover { border-color: var(--accent); color: var(--accent); transform: scale(1.05); }
-        .preset-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
-
-        .mixer-panel { padding-top: 15px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 12px; }
-        .mixer-panel.hidden { display: none; }
-        .mixer-panel.active { display: flex; }
-        .audio-track { display: flex; align-items: center; justify-content: space-between; }
-        .track-label { font-size: 10px; font-weight: 600; color: var(--text-dim); letter-spacing: 1px; min-width: 60px; text-align: left; }
-
-        input[type="range"] { -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 55%; height: 4px; cursor: pointer; }
-        input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: var(--border); border-radius: 10px; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; cursor: pointer; margin-top: -5px; }
-        input[type="range"]::-moz-range-track { width: 100%; height: 4px; background: var(--border); border-radius: 10px; }
-        input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; background: var(--accent); border-radius: 50%; cursor: pointer; border: none; }
-
-        .youtube-container { display: none; margin-bottom: 15px; }
-        .youtube-container.active { display: block; }
-        .youtube-container iframe { width: 100%; height: 130px; border-radius: 12px; border: none; }
-
-        .external-player { display: none; padding: 12px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); margin-bottom: 15px; }
-        .external-player.active { display: block; }
-        .external-player a { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border-radius: 20px; text-decoration: none; color: white; font-weight: 600; font-size: 12px; transition: transform 0.3s ease; }
-        .external-player a:hover { transform: scale(1.03); }
-        .spotify-link { background: var(--spotify); }
-        .apple-link { background: var(--apple); }
-
-        .yt-presets { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; justify-content: center; }
-        .yt-preset-btn { padding: 5px 10px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); border-radius: 10px; font-size: 9px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s ease; }
-        .yt-preset-btn:hover { border-color: var(--youtube); color: var(--youtube); }
-        .yt-preset-btn.active { background: var(--youtube); border-color: var(--youtube); color: white; }
-        .yt-custom-input { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
-        .yt-custom-input input { flex: 1; padding: 7px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text-main); font-size: 11px; font-family: inherit; }
-        .yt-custom-input input::placeholder { color: var(--text-dim); }
-        .yt-custom-input input:focus { border-color: var(--youtube); outline: none; }
-
-        .custom-link-input { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
-        .custom-link-input input { flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text-main); font-size: 11px; font-family: inherit; }
-        .custom-link-input input::placeholder { color: var(--text-dim); }
-        .custom-link-input input:focus { border-color: var(--accent); outline: none; }
-        .custom-link-save { background: var(--accent); border: none; color: white; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 12px; flex-shrink: 0; transition: opacity 0.2s; }
-        .custom-link-save:hover { opacity: 0.85; }
-        .custom-link-hint { font-size: 9px; color: var(--text-dim); text-align: center; margin-top: 2px; }
-
-        .finish-countdown { font-size: 11px !important; color: var(--text-dim) !important; margin-bottom: 20px !important; }
-        .finish-countdown span { color: var(--accent); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-
-        /* Günlük Hedef */
-        .daily-goal-section { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border); }
-        .daily-goal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .goal-progress-bar { height: 6px; background: var(--progress-bg); border-radius: 10px; overflow: hidden; margin-bottom: 5px; }
-        .goal-progress-fill { height: 100%; background: var(--accent); border-radius: 10px; transition: width 0.4s ease; width: 0%; }
-        .goal-progress-label { font-size: 9px; color: var(--text-dim); text-align: right; letter-spacing: 0.5px; }
-
-        /* Görev Listesi */
-        .task-section { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
-        .task-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .task-count { font-size: 9px; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
-        .task-input-row { display: flex; gap: 6px; margin-bottom: 10px; }
-        .task-input-row input { flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text-main); font-size: 11px; font-family: inherit; }
-        .task-input-row input::placeholder { color: var(--text-dim); }
-        .task-input-row input:focus { border-color: var(--accent); outline: none; }
-        .task-list { list-style: none; display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto; padding-right: 2px; }
-        .task-list::-webkit-scrollbar { width: 3px; }
-        .task-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-        .task-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: rgba(0,0,0,0.15); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: border-color 0.2s; }
-        .task-item:hover { border-color: var(--accent); }
-        .task-item.done { opacity: 0.5; }
-        .task-item.done .task-text { text-decoration: line-through; }
-        .task-checkbox { width: 14px; height: 14px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; transition: all 0.2s; }
-        .task-item.done .task-checkbox { background: var(--accent); border-color: var(--accent); color: white; }
-        .task-text { flex: 1; font-size: 11px; color: var(--text-main); text-align: left; }
-        .task-delete { background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 11px; padding: 2px 4px; opacity: 0; transition: opacity 0.2s; }
-        .task-item:hover .task-delete { opacity: 1; }
-
-        /* Klavye Kısayolları */
-        .shortcuts-hint { margin-top: 8px; font-size: 9px; color: var(--text-dim); letter-spacing: 0.5px; }
-        .shortcut-key { display: inline-block; background: var(--progress-bg); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-family: 'JetBrains Mono', monospace; font-size: 8px; }
-
-        .cycle-setting { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); }
-        .cycle-controls { display: flex; align-items: center; gap: 8px; }
-        .cycle-btn { background: var(--card); border: 1px solid var(--border); color: var(--text-main); width: 26px; height: 26px; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.2s; line-height: 1; display: flex; align-items: center; justify-content: center; }
-        .cycle-btn:hover { border-color: var(--accent); color: var(--accent); }
-        #cycle-count { font-family: 'JetBrains Mono', monospace; font-size: 16px; color: var(--accent); min-width: 20px; text-align: center; }
-        .cycle-label { font-size: 9px; color: var(--text-dim); letter-spacing: 0.5px; }
-
-        .notification-prompt { display: none; margin-top: 12px; font-size: 9px; }
-        .notification-prompt.show { display: block; }
-        .notification-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 5px 10px; border-radius: 8px; font-size: 9px; cursor: pointer; font-family: inherit; transition: all 0.3s ease; }
-        .notification-btn:hover { background: var(--accent); color: white; }
-
-        .footer { margin-top: 25px; font-size: 9px; color: var(--text-dim); letter-spacing: 1px; }
-        .footer span { color: var(--accent); font-weight: 600; }
-        .footer-copyright { margin-top: 10px; font-size: 14px; color: #666; text-align: center; letter-spacing: 0.2px; font-weight: 400; }
-
-        .stats-panel { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 50; overflow-y: auto; padding: 20px; }
-        .stats-panel.active { display: flex; align-items: center; justify-content: center; }
-        .stats-content { max-width: 420px; width: 100%; background: var(--card); backdrop-filter: blur(40px); border: 1px solid var(--border); border-radius: 30px; padding: 30px; }
-        .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .stats-header h2 { font-size: 16px; font-weight: 600; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; }
-        .stats-close { background: transparent; border: 1px solid var(--border); color: var(--text-dim); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px; transition: all 0.3s ease; }
-        .stats-close:hover { border-color: var(--accent); color: var(--accent); }
-        .stats-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        .stats-card { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); border-radius: 15px; padding: 15px; text-align: center; }
-        .stats-card-value { font-size: 28px; font-weight: 600; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
-        .stats-card-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
-        .stats-chart-title { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
-        .stats-chart { display: flex; align-items: flex-end; justify-content: space-between; height: 100px; padding: 0 5px; margin-bottom: 10px; }
-        .chart-bar-container { display: flex; flex-direction: column; align-items: center; flex: 1; }
-        .chart-bar { width: 20px; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.3s ease; }
-        .chart-bar-label { font-size: 9px; color: var(--text-dim); margin-top: 5px; }
-        .chart-bar-value { font-size: 8px; color: var(--text-dim); margin-bottom: 3px; }
-
-        /* ========== DESKTOP STYLES ========== */
-
-        /* Tablet breakpoint (900px+) */
-        @media (min-width: 900px) {
-            body {
-                padding: 20px;
-                align-items: center;
-                min-height: 100vh;
-            }
-
-            .app-header {
-                display: flex;
-            }
-
-            .zenith-app {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 40px;
-                max-width: 1000px;
-                min-height: auto;
-                padding: 40px;
-                border-radius: 40px;
-                margin-top: 60px;
-            }
-
-            .brand-name {
-                grid-column: 1 / -1;
-                font-size: 12px;
-                margin-bottom: 20px;
-            }
-
-            /* Left column - Timer */
-            .timer-section {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .mode-selector {
-                margin-bottom: 20px;
-            }
-
-            .mode-btn {
-                padding: 8px 16px;
-                font-size: 11px;
-            }
-
-            .progress-ring-container {
-                width: 280px;
-                height: 280px;
-            }
-
-            #timer-display {
-                font-size: 64px;
-            }
-
-            .timer-mode {
-                font-size: 12px;
-            }
-
-            .custom-timer-input {
-                margin-bottom: 12px;
-            }
-
-            .control-group {
-                margin-bottom: 0;
-            }
-
-            .btn-main {
-                height: 56px;
-                font-size: 15px;
-            }
-
-            /* Right column - Music & Settings */
-            .music-section {
-                display: flex;
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .source-selector {
-                margin-bottom: 10px;
-            }
-
-            .source-btn {
-                padding: 8px 14px;
-                font-size: 11px;
-            }
-
-            .presets {
-                margin-bottom: 8px;
-            }
-
-            .preset-btn {
-                padding: 6px 12px;
-                font-size: 10px;
-            }
-
-            .mixer-panel {
-                padding-top: 12px;
-                gap: 10px;
-            }
-
-            .track-label {
-                font-size: 11px;
-                min-width: 70px;
-            }
-
-            input[type="range"] {
-                width: 65%;
-            }
-
-            .youtube-container iframe {
-                height: 140px;
-            }
-
-            .external-player {
-                padding: 14px;
-            }
-
-            .external-player a {
-                padding: 12px 18px;
-                font-size: 13px;
-            }
-
-            .notification-prompt {
-                margin-top: 10px;
-            }
-
-            .footer {
-                position: absolute;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                margin-top: 0;
-            }
-        }
-
-        /* Large desktop (1200px+) */
-        @media (min-width: 1200px) {
-            .zenith-app {
-                max-width: 1100px;
-                padding: 50px;
-                gap: 50px;
-                border-radius: 50px;
-            }
-
-            .brand-name {
-                font-size: 13px;
-                letter-spacing: 8px;
-            }
-
-            .progress-ring-container {
-                width: 320px;
-                height: 320px;
-            }
-
-            #timer-display {
-                font-size: 72px;
-            }
-
-            .timer-mode {
-                font-size: 13px;
-                letter-spacing: 3px;
-            }
-
-            .mode-btn {
-                padding: 10px 20px;
-                font-size: 12px;
-                border-radius: 22px;
-            }
-
-            .control-group {
-                gap: 15px;
-            }
-
-            .btn-main {
-                height: 60px;
-                font-size: 16px;
-                border-radius: 22px;
-            }
-
-            .btn-icon {
-                border-radius: 22px;
-                font-size: 14px;
-            }
-
-            .source-btn {
-                padding: 10px 18px;
-                font-size: 12px;
-                border-radius: 15px;
-            }
-
-            .preset-btn {
-                padding: 8px 14px;
-                font-size: 11px;
-                border-radius: 12px;
-            }
-
-            .mixer-panel {
-                gap: 15px;
-                padding-top: 18px;
-            }
-
-            .track-label {
-                font-size: 12px;
-                min-width: 80px;
-            }
-
-            input[type="range"] {
-                width: 70%;
-                height: 5px;
-            }
-
-            input[type="range"]::-webkit-slider-thumb {
-                width: 18px;
-                height: 18px;
-            }
-
-            .youtube-container iframe {
-                height: 160px;
-                border-radius: 15px;
-            }
-
-            .external-player {
-                padding: 18px;
-                border-radius: 18px;
-            }
-
-            .external-player a {
-                padding: 14px 22px;
-                font-size: 14px;
-                border-radius: 25px;
-            }
-
-            .footer {
-                font-size: 11px;
-            }
-        }
-
-        /* Ultra-wide (1600px+) */
-        @media (min-width: 1600px) {
-            body {
-                padding: 40px;
-            }
-
-            .zenith-app {
-                max-width: 1200px;
-                padding: 60px;
-                gap: 60px;
-                border-radius: 60px;
-            }
-
-            .brand-name {
-                font-size: 14px;
-                letter-spacing: 10px;
-                margin-bottom: 30px;
-            }
-
-            .progress-ring-container {
-                width: 360px;
-                height: 360px;
-            }
-
-            #timer-display {
-                font-size: 80px;
-            }
-
-            .mode-selector {
-                gap: 12px;
-                margin-bottom: 30px;
-            }
-
-            .mode-btn {
-                padding: 12px 24px;
-                font-size: 13px;
-            }
-
-            .control-group {
-                margin-top: 10px;
-            }
-
-            .btn-main {
-                height: 68px;
-                font-size: 18px;
-            }
-
-            .source-selector {
-                gap: 12px;
-            }
-
-            .source-btn {
-                padding: 12px 22px;
-                font-size: 13px;
-            }
-
-            .presets {
-                gap: 10px;
-            }
-
-            .preset-btn {
-                padding: 10px 18px;
-                font-size: 12px;
-            }
-
-            .mixer-panel {
-                gap: 20px;
-                padding-top: 25px;
-            }
-
-            .track-label {
-                font-size: 13px;
-            }
-
-            input[type="range"] {
-                height: 6px;
-            }
-
-            input[type="range"]::-webkit-slider-thumb {
-                width: 20px;
-                height: 20px;
-            }
-
-            .youtube-container {
-                margin-bottom: 20px;
-            }
-
-            .youtube-container iframe {
-                height: 180px;
-            }
-
-            .external-player {
-                padding: 20px;
-            }
-
-            .notification-prompt {
-                margin-top: 15px;
-            }
-        }
-
-        /* Mobile styles remain unchanged */
-        @media (max-width: 480px) {
-            .zenith-app {
-                width: 95%;
-                padding: 25px 18px;
-                border-radius: 25px;
-                min-height: calc(100vh - 20px);
-            }
-
-            .progress-ring-container {
-                width: 200px;
-                height: 200px;
-            }
-
-            #timer-display {
-                font-size: 48px;
-            }
-
-            .mode-selector {
-                gap: 4px;
-            }
-
-            .mode-btn {
-                padding: 6px 10px;
-                font-size: 9px;
-            }
-
-            .control-group {
-                gap: 8px;
-                margin-bottom: 25px;
-            }
-
-            .btn-main {
-                height: 48px;
-                font-size: 13px;
-            }
-
-            .source-selector {
-                gap: 5px;
-            }
-
-            .source-btn {
-                padding: 6px 10px;
-                font-size: 9px;
-            }
-
-            .presets {
-                gap: 4px;
-            }
-
-            .preset-btn {
-                padding: 4px 8px;
-                font-size: 8px;
-            }
-
-            .mixer-panel {
-                gap: 10px;
-                padding-top: 12px;
-            }
-
-            .track-label {
-                font-size: 9px;
-                min-width: 50px;
-            }
-
-            input[type="range"] {
-                width: 50%;
-            }
-
-            .footer {
-                font-size: 8px;
-                margin-top: 20px;
-            }
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .finish-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s ease; }
-        .finish-modal-content { background: var(--card); backdrop-filter: blur(40px); padding: 40px; border-radius: 30px; text-align: center; border: 1px solid var(--border); max-width: 320px; width: 90%; }
-        .finish-modal h2 { font-size: 40px; margin-bottom: 12px; }
-        .finish-modal p { color: var(--text-dim); font-size: 14px; line-height: 1.5; }
-        .finish-sub { margin-top: 8px; margin-bottom: 24px; color: var(--accent) !important; font-weight: 600; font-size: 12px !important; }
-        .finish-modal-actions { display: flex; flex-direction: column; gap: 10px; }
-        .finish-start-btn { background: var(--accent); color: white; border: none; padding: 13px 30px; border-radius: 15px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.2s; }
-        .finish-start-btn:hover { opacity: 0.85; }
-        .finish-modal-dismiss { background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 10px 20px; border-radius: 12px; font-size: 12px; cursor: pointer; font-family: inherit; transition: border-color 0.2s; }
-        .finish-modal-dismiss:hover { border-color: var(--accent); color: var(--accent); }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-            .bg-gradient { animation: none; }
-        }
-
         [data-theme="dark"] {
-            --bg: #080b12;
-            --accent: #b7a6ff;
-            --accent-glow: rgba(183, 166, 255, 0.16);
-            --card: rgba(17, 22, 35, 0.86);
-            --border: rgba(255, 255, 255, 0.09);
-            --text-main: #f4f5fb;
-            --text-dim: #98a2b8;
-            --progress-bg: rgba(255, 255, 255, 0.11);
+            --bg: #181e1a; --card: #222a24; --accent: #b6caa6; --accent-glow: #b6caa612;
+            --text-main: #eceee5; --text-dim: #a2aa9c; --border: #354035; --progress-bg: #354035;
         }
-
-        body {
-            min-height: 100vh;
-            min-height: 100svh;
-            padding: clamp(14px, 3vw, 32px);
-            background:
-                radial-gradient(ellipse at 50% -10%, var(--accent-glow), transparent 52%),
-                var(--bg);
-        }
-
-        .bg-gradient {
-            background:
-                radial-gradient(ellipse at 12% 28%, var(--accent-glow), transparent 38%),
-                radial-gradient(ellipse at 88% 78%, var(--accent-glow), transparent 34%);
-            pointer-events: none;
-        }
-
-        .app-header {
-            padding: 14px clamp(18px, 4vw, 56px);
-            background: rgba(8, 11, 18, 0.72);
-            border-color: var(--border);
-        }
-
-        .app-header .brand,
-        .brand-name {
-            color: var(--accent);
-        }
-
-        .theme-toggle,
-        .stats-toggle {
-            min-height: 42px;
-            border-radius: 14px;
-        }
-
-        .zenith-app {
-            width: min(100%, 1120px);
-            max-width: 1120px;
-            padding: clamp(20px, 4vw, 38px);
-            border-radius: 30px;
-            border-color: var(--border);
-            background: var(--card);
-            box-shadow: 0 32px 100px rgba(0, 0, 0, 0.28);
-        }
-
-        .brand-name {
-            margin-bottom: 4px;
-            font-size: 11px;
-            letter-spacing: 0.32em;
-        }
-
-        .timer-section,
-        .music-section {
-            min-width: 0;
-            padding: clamp(16px, 2.5vw, 26px);
-            border: 1px solid var(--border);
-            border-radius: 22px;
-            background: rgba(255, 255, 255, 0.025);
-        }
-
-        .mode-selector {
-            width: 100%;
-            gap: 8px;
-        }
-
-        .mode-btn {
-            min-height: 42px;
-            padding-inline: 14px;
-            border-radius: 13px;
-        }
-
-        .mode-btn.active {
-            box-shadow: 0 6px 22px var(--accent-glow);
-        }
-
-        .progress-ring-container {
-            filter: drop-shadow(0 0 24px var(--accent-glow));
-        }
-
-        .progress-ring__bg {
-            opacity: 0.8;
-        }
-
-        .control-group {
-            width: 100%;
-        }
-
-        .btn-main,
-        .btn-icon {
-            min-height: 50px;
-            border-radius: 15px;
-        }
-
-        .btn-icon {
-            flex: 0 0 56px;
-        }
-
-        .daily-goal-section,
-        .task-section,
-        .mixer-panel,
-        .cycle-setting {
-            border-color: var(--border);
-        }
-
-        .goal-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        #goal-count {
-            min-width: 20px;
-            color: var(--accent);
-            font: 600 14px 'JetBrains Mono', monospace;
-            text-align: center;
-        }
-
-        .audio-track {
-            gap: 12px;
-            padding: 7px 10px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.025);
-        }
-
-        .audio-track input[type="range"] {
-            flex: 1;
-            width: auto;
-            accent-color: var(--accent);
-        }
-
-        .task-input-row input,
-        .custom-timer-input input,
-        .yt-custom-input input,
-        .custom-link-input input {
-            min-height: 42px;
-            border-color: var(--border);
-        }
-
-        .task-item {
-            min-height: 42px;
-            background: rgba(255, 255, 255, 0.035);
-        }
-
-        .task-checkbox,
-        .task-delete {
-            min-width: 32px;
-            min-height: 32px;
-            justify-content: center;
-        }
-
-        .cycle-btn,
-        .custom-link-save,
-        .stats-close {
-            min-width: 36px;
-            min-height: 36px;
-        }
-
-        .footer-copyright {
-            color: var(--text-dim);
-            font-size: 11px;
-        }
-
-        .stats-content {
-            border-color: var(--border);
-            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.32);
-        }
-
-        @media (min-width: 900px) {
-            body {
-                padding: 88px 32px 32px;
-            }
-
-            .zenith-app {
-                grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-                align-items: stretch;
-                gap: 20px;
-                margin: 0 auto;
-            }
-
-            .timer-section {
-                justify-content: flex-start;
-            }
-
-            .music-section {
-                gap: 12px;
-            }
-
-            .footer {
-                position: static;
-                margin-top: 4px;
-                transform: none;
-                text-align: center;
-            }
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { min-height: 100svh; background: var(--bg); color: var(--text-main); font-family: 'DM Sans', sans-serif; padding: 0 40px 24px; }
+        button, input { font: inherit; }
+        button { cursor: pointer; }
+        button, a, input { -webkit-tap-highlight-color: transparent; }
+        button { transition: background .2s, color .2s, border-color .2s, transform .2s; }
+        button:hover { filter: brightness(.96); }
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+        .bg-gradient, .mobile-only { display: none; }
+        .app-header { max-width: 1160px; height: 96px; margin: auto; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+        .brand { display: flex; align-items: center; gap: 11px; font-size: 19px; font-weight: 600; letter-spacing: -.8px; }
+        .brand::before { content: '✳'; display: grid; place-items: center; width: 31px; height: 31px; color: var(--accent); font-size: 35px; font-weight: 400; }
+        .brand span { font-weight: 400; color: var(--text-dim); }
+        .header-actions { display: flex; align-items: center; gap: 8px; }
+        .theme-toggle, .stats-toggle { border: 1px solid var(--border); background: transparent; color: var(--text-main); border-radius: 9px; min-height: 36px; padding: 8px 12px; font-size: 11px; font-weight: 500; }
+        .stats-toggle { background: var(--card); }
+        .zenith-app { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; }
+        .workspace-intro { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: flex-end; padding: 34px 0 4px; }
+        .eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
+        .workspace-intro h2 { font-family: 'Instrument Serif', Georgia, serif; font-size: clamp(34px, 4vw, 48px); font-weight: 400; letter-spacing: -1.4px; line-height: 1.1; }
+        .workspace-intro h2 em { color: var(--accent); font-weight: 400; }
+        .intro-note { font-size: 12px; color: var(--text-dim); line-height: 1.7; max-width: 210px; text-align: right; }
+        .timer-section { --accent: #d6e6b7; --text-dim: #acb7a6; --border: #ffffff1a; --card: #2b352c; --text-main: #f3f3e8; --progress-bg: #ffffff12; color: var(--text-main); background: #28342c; border-radius: 20px; display: flex; flex-direction: column; align-items: center; padding: 28px 36px 24px; position: relative; overflow: hidden; }
+        .timer-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, #79926520, transparent 65%); pointer-events: none; }
+        .timer-section > * { position: relative; }
+        .session-topline { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; color: #c9d2c2; font-size: 10px; letter-spacing: 1.6px; text-transform: uppercase; }
+        .session-topline span:last-child { display: flex; align-items: center; gap: 6px; color: #a9bba0; font-size: 9px; letter-spacing: .7px; }
+        .session-topline span:last-child::before { content: ''; width: 5px; height: 5px; background: #c8da9e; border-radius: 50%; }
+        .mode-selector { display: flex; justify-content: center; gap: 4px; padding: 4px; border: 1px solid #ffffff0d; background: #19241d55; border-radius: 10px; margin-bottom: 18px; }
+        .mode-btn { border: 0; background: transparent; color: #afb9ab; font-size: 11px; font-weight: 500; padding: 10px 14px; border-radius: 7px; white-space: nowrap; }
+        .mode-btn.active { background: #eceddf; color: #28342c; }
+        .custom-timer-input { align-items: center; gap: 8px; font-size: 12px; margin-bottom: 12px; }
+        .custom-timer-input input { width: 65px; padding: 5px 8px; }
+        .custom-warning { display: none; color: #f4b1a4; }
+        .custom-warning.show { display: block; }
+        .progress-ring-container { width: min(100%, 300px); aspect-ratio: 1; height: auto; position: relative; margin: 2px auto 18px; }
+        .progress-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .progress-ring circle { stroke-width: 1.4px; }
+        .progress-ring__circle { transition: stroke-dashoffset .3s linear; }
+        .timer-wrapper { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .timer-mode { color: #bccab0; font-size: 10px; font-weight: 500; letter-spacing: 3px; margin-bottom: 13px; text-transform: uppercase; }
+        #timer-display { font-family: 'DM Sans', sans-serif; font-variant-numeric: tabular-nums; font-size: 78px; font-weight: 400; letter-spacing: -5px; line-height: 1.1; }
+        .timer-caption { font-size: 11px; color: #a0ae98; margin-top: 14px; }
+        .control-group { display: flex; gap: 10px; width: min(100%, 288px); margin-bottom: 16px; }
+        .btn { border-radius: 10px; height: 48px; font-weight: 600; font-size: 12px; }
+        .btn-main { background: #dce7c4; border: 1px solid #dce7c4; color: #28342c; flex: 1; }
+        .btn-main:hover { background: #eaf1db; transform: translateY(-1px); }
+        .btn-icon { width: 48px; border: 1px solid #ffffff24; background: transparent; color: #e1e7d8; font-size: 22px; }
+        .shortcuts-hint { color: #9ca894; font-size: 9px; text-align: center; margin-bottom: 25px; }
+        .shortcut-key { font-family: inherit; border: 1px solid #ffffff24; border-radius: 4px; padding: 2px 5px; font-size: 9px; }
+        .daily-goal-section { width: 100%; border-top: 1px solid var(--border); padding-top: 20px; margin-top: auto; }
+        .daily-goal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        .track-label { color: var(--text-dim); font-size: 11px; font-weight: 500; text-align: left; }
+        .goal-controls, .cycle-controls { display: flex; align-items: center; gap: 10px; }
+        .cycle-btn { width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 6px; color: inherit; background: transparent; }
+        #goal-count, #cycle-count { font-size: 12px; font-variant-numeric: tabular-nums; }
+        .cycle-label { color: var(--text-dim); font-size: 10px; }
+        .goal-progress-bar { height: 4px; border-radius: 4px; background: #ffffff17; overflow: hidden; }
+        .goal-progress-fill { height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+        .goal-progress-label { color: #a8b49f; font-size: 10px; margin-top: 8px; text-align: right; }
+        .music-section { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+        .sound-card, .task-section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+        .section-heading { font-size: 15px; letter-spacing: -.3px; font-weight: 600; margin-bottom: 6px; }
+        .section-description { color: var(--text-dim); font-size: 11px; line-height: 1.6; margin-bottom: 18px; }
+        .source-selector { display: flex; gap: 3px; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+        .source-btn { border: 0; border-radius: 6px; background: transparent; padding: 7px 8px; color: var(--text-dim); font-size: 10px; display: flex; align-items: center; gap: 4px; }
+        .source-btn.active { background: var(--accent-glow); color: var(--accent); }
+        .presets { display: flex; gap: 5px; margin-bottom: 18px; }
+        .preset-btn { flex: 1; padding: 8px 3px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); border-radius: 7px; font-size: 9px; white-space: nowrap; }
+        .preset-btn:hover, .preset-btn.active { color: var(--accent); border-color: var(--accent); }
+        .mixer-panel { display: flex; flex-direction: column; gap: 19px; }
+        .mixer-panel.hidden { display: none; }
+        .audio-track { display: flex; align-items: center; gap: 10px; }
+        .audio-track .track-label { width: 72px; color: var(--text-main); font-size: 11px; flex-shrink: 0; }
+        input[type="range"] { appearance: none; -webkit-appearance: none; width: 100%; height: 4px; background: var(--progress-bg); border-radius: 4px; cursor: pointer; accent-color: var(--accent); }
+        input[type="range"]::-webkit-slider-thumb { appearance: none; width: 11px; height: 11px; border-radius: 50%; background: var(--accent); border: 2px solid var(--card); box-shadow: 0 0 0 1px var(--accent); }
+        input[type="range"]::-moz-range-thumb { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); border: 2px solid var(--card); }
+        .cycle-setting { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); margin-top: 23px; padding-top: 16px; }
+        .cycle-controls { gap: 7px; }
+        .cycle-controls .cycle-label { max-width: 60px; font-size: 9px; }
+        .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .task-header .track-label { color: var(--text-main); font-size: 15px; font-weight: 600; letter-spacing: -.3px; }
+        .task-count { color: var(--text-dim); border: 1px solid var(--border); border-radius: 5px; font-size: 10px; padding: 3px 6px; }
+        .task-input-row, .custom-link-input, .yt-custom-input { display: flex; gap: 6px; }
+        input[type="text"], input[type="number"], input[type="url"] { min-width: 0; color: var(--text-main); background: transparent; border: 1px solid var(--border); border-radius: 7px; outline: none; font-size: 11px; padding: 10px; }
+        input::placeholder { color: var(--text-dim); }
+        input:focus { border-color: var(--accent); }
+        .task-input-row input, .custom-link-input input, .yt-custom-input input { flex: 1; width: 100%; }
+        .custom-link-save { background: var(--accent); border: 0; color: var(--card); border-radius: 7px; width: 36px; flex-shrink: 0; }
+        .task-list { list-style: none; max-height: 160px; overflow-y: auto; margin-top: 10px; }
+        .task-list:empty::after { content: attr(data-empty); display: block; color: var(--text-dim); font-size: 11px; line-height: 1.7; padding: 12px 0 2px; }
+        .task-item { display: flex; align-items: center; gap: 9px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+        .task-checkbox { border: 1px solid var(--border); background: transparent; width: 18px; height: 18px; border-radius: 5px; color: var(--card); flex-shrink: 0; font-size: 10px; }
+        .task-item.done .task-checkbox { background: var(--accent); border-color: var(--accent); }
+        .task-text { flex: 1; font-size: 12px; text-align: left; overflow-wrap: anywhere; }
+        .task-item.done .task-text { text-decoration: line-through; color: var(--text-dim); }
+        .task-delete { border: 0; background: none; color: var(--text-dim); padding: 5px; }
+        .footer { font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 2px; }
+        .footer span { color: var(--accent); }
+        .footer-copyright { grid-column: 1 / -1; padding: 0 0 8px; color: var(--text-dim); font-size: 10px; text-align: center; }
+        .notification-prompt { display: none; }
+        .notification-prompt.show { display: block; }
+        .notification-btn { width: 100%; color: var(--text-dim); border: 1px solid var(--border); background: transparent; border-radius: 8px; padding: 10px; font-size: 11px; }
+        .youtube-container, .external-player { display: none; margin-bottom: 16px; }
+        .youtube-container.active, .external-player.active { display: block; }
+        iframe { width: 100%; max-width: 100%; border: 0; border-radius: 8px; }
+        .external-player a { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 12px; font-size: 11px; text-decoration: none; color: white; border-radius: 8px; }
+        .spotify-link { background: var(--spotify); }
+        .apple-link { background: var(--apple); margin-top: 8px; }
+        .custom-link-hint { font-size: 10px; color: var(--text-dim); margin-top: 8px; }
+        .yt-presets { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+        .yt-preset-btn { border: 1px solid var(--border); color: var(--text-dim); background: transparent; border-radius: 5px; padding: 5px; font-size: 10px; }
+        .yt-preset-btn.active { border-color: var(--accent); color: var(--accent); }
+        .yt-custom-input { margin-bottom: 10px; }
+        .stats-panel, .finish-modal { display: none; position: fixed; inset: 0; padding: 24px; background: #111b17b3; backdrop-filter: blur(8px); z-index: 200; overflow-y: auto; }
+        .stats-panel.active, .finish-modal { display: flex; align-items: center; justify-content: center; }
+        .stats-content, .finish-modal-content { background: var(--card); border: 1px solid var(--border); padding: 28px; border-radius: 20px; max-width: 480px; width: 100%; max-height: 90svh; overflow-y: auto; }
+        .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .stats-header h2 { font-size: 19px; font-weight: 500; }
+        .stats-close { background: none; border: 1px solid var(--border); color: var(--text-main); width: 32px; height: 32px; border-radius: 8px; }
+        .stats-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .stats-card { background: var(--bg); border-radius: 9px; padding: 15px 8px; text-align: center; }
+        .stats-card-value { font-size: 25px; color: var(--accent); }
+        .stats-card-label { font-size: 9px; color: var(--text-dim); margin-top: 4px; }
+        .stats-chart-title { font-size: 12px; margin: 24px 0 15px; }
+        .stats-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 110px; margin-bottom: 35px; }
+        .chart-bar-container { display: flex; flex: 1; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+        .chart-bar { background: var(--accent); border-radius: 4px 4px 0 0; width: 22px; min-height: 3px; }
+        .chart-bar-label, .chart-bar-value { font-size: 9px; color: var(--text-dim); margin: 4px 0; }
+        #export-sessions { width: 100%; }
+        .finish-modal-content { text-align: center; line-height: 1.7; }
+        .finish-modal-content h2 { font-size: 36px; margin-bottom: 12px; }
+        .finish-sub, .finish-countdown { font-size: 12px; color: var(--text-dim); margin: 12px 0; }
+        .finish-modal-actions, .install-buttons { display: flex; gap: 8px; justify-content: center; margin-top: 20px; }
+        .finish-start-btn, .finish-modal-dismiss, .install-btn { padding: 10px 16px; border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); background: var(--bg); font-size: 12px; }
+        .finish-start-btn, .install-btn.accept { background: var(--accent); color: var(--card); }
+        .install-prompt { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); border: 1px solid var(--border); border-radius: 14px; background: var(--card); padding: 20px; width: min(90%, 350px); z-index: 150; box-shadow: 0 10px 50px #0002; font-size: 12px; text-align: center; }
+        .install-prompt.show { display: block; }
         @media (max-width: 899px) {
-            body {
-                align-items: flex-start;
-                padding: 76px 14px 18px;
-            }
-
-            .zenith-app {
-                width: 100%;
-                max-width: 560px;
-                min-height: auto;
-                margin: 0 auto;
-                padding: 22px 18px;
-                border-radius: 24px;
-            }
-
-            .timer-section,
-            .music-section {
-                padding: 16px;
-                border-radius: 18px;
-            }
-
-            .timer-section {
-                margin-bottom: 16px;
-            }
-
-            .mode-btn {
-                flex: 1 1 calc(50% - 8px);
-                padding-inline: 8px;
-                font-size: 10px;
-            }
-
-            .mobile-only {
-                min-width: 44px;
-                min-height: 44px;
-                border-radius: 14px;
-            }
-
-            .footer {
-                position: static;
-                margin-top: 14px;
-                transform: none;
-                text-align: center;
-            }
+            body { padding: 0 20px 20px; }
+            .app-header { height: 76px; }
+            .brand { font-size: 17px; }
+            .zenith-app { grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; }
+            .workspace-intro { padding-top: 26px; }
+            .intro-note { display: none; }
+            .timer-section { padding: 24px 20px; }
+            .mode-btn { padding: 9px 8px; font-size: 10px; }
+            .progress-ring-container { width: min(100%, 270px); height: auto; }
+            .sound-card, .task-section { padding: 18px; }
         }
-
-        @media (max-width: 360px) {
-            .zenith-app {
-                padding-inline: 12px;
-            }
-
-            .timer-section,
-            .music-section {
-                padding: 12px;
-            }
-
-            .progress-ring-container {
-                width: 184px;
-                height: 184px;
-            }
+        @media (max-width: 700px) {
+            body { padding: 0 16px 18px; }
+            .app-header { height: 72px; }
+            .header-actions { gap: 5px; }
+            .theme-toggle, .stats-toggle { padding: 7px 8px; min-height: 34px; font-size: 9px; }
+            .brand { font-size: 16px; gap: 6px; }
+            .brand::before { font-size: 27px; width: 25px; }
+            .brand span { display: none; }
+            .zenith-app { grid-template-columns: 1fr; gap: 16px; max-width: 480px; }
+            .workspace-intro { padding: 23px 0 4px; }
+            .workspace-intro h2 { font-size: 37px; }
+            .eyebrow { font-size: 9px; }
+            .timer-section { padding: 22px; border-radius: 16px; }
+            .session-topline { margin-bottom: 22px; }
+            .mode-selector { width: 100%; }
+            .mode-btn { flex: 1; padding: 9px 5px; font-size: 10px; }
+            .progress-ring-container { width: min(100%, 260px); height: auto; margin: 0 auto 12px; }
+            #timer-display { font-size: 70px; }
+            .control-group { width: 100%; }
+            .shortcuts-hint { margin-bottom: 20px; }
+            .music-section { gap: 16px; }
+            .sound-card, .task-section { padding: 22px; }
+            .source-btn { flex: 1; justify-content: center; }
+            .presets { gap: 7px; }
+            .preset-btn { padding: 9px 5px; }
+            .task-list { max-height: 230px; }
+            .footer-copyright { margin-top: 4px; }
         }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
     </style>
 </head>
-<body data-theme="dark" role="application" aria-label="Zenith Focus - Derin Çalışma Uygulaması">
+<body data-theme="light" role="application" aria-label="Zenith Focus - Derin Çalışma Uygulaması">
 
     <div class="bg-gradient" aria-hidden="true"></div>
 
     <!-- Desktop Header -->
     <header class="app-header">
-        <div class="brand">Zenith Focus</div>
+        <div class="brand">zenith<span> / focus</span></div>
         <div class="header-actions">
             <button class="theme-toggle" id="lang-btn" aria-label="Dil değiştir">🌐 TR</button>
             <button class="theme-toggle" id="theme-btn" aria-label="Tema değiştir">🌙 GECE MODU</button>
@@ -1051,10 +224,16 @@
     <button class="stats-toggle mobile-only" id="stats-btn-mobile" aria-label="İstatistikler">📊</button>
 
     <main class="zenith-app">
-        <div class="brand-name">Zenith Focus</div>
+        <div class="workspace-intro">
+            <div><p class="eyebrow" data-i18n="workspaceLabel">KENDİNE BİR ALAN AÇ</p>
+            <h2><span data-i18n="introTitle">Az şey yap.</span> <em data-i18n="introEmphasis">Tam odaklan.</em></h2></div>
+            <p class="intro-note" data-i18n="introNote">Bir görev, sakin bir zihin.
+Gerisi biraz bekleyebilir.</p>
+        </div>
 
         <!-- Left Column - Timer -->
         <div class="timer-section">
+            <div class="session-topline"><span data-i18n="sessionLabel">ODAK ALANI</span><span data-i18n="sessionStatus">KENDİ RİTMİNDE</span></div>
             <div class="mode-selector" role="group" aria-label="Timer modu seç">
                 <button class="mode-btn active" data-mode="focus" data-time="25" aria-pressed="true" data-i18n="modeFocus">ODAK (25 dk)</button>
                 <button class="mode-btn" data-mode="short" data-time="5" aria-pressed="false" data-i18n="modeShort">KISA MOLA (5 dk)</button>
@@ -1076,12 +255,19 @@
                 <div class="timer-wrapper">
                     <div class="timer-mode" id="timer-mode">ODAK</div>
                     <h1 id="timer-display" role="timer" aria-live="off" aria-atomic="true">25:00</h1>
+                    <p class="timer-caption" data-i18n="timerCaption">Şimdi sadece buradasın.</p>
                 </div>
             </div>
 
             <div class="control-group">
                 <button class="btn btn-main" id="start-btn" aria-label="Timer'ı başlat" data-i18n="startFocus">ODAK BAŞLAT</button>
                 <button class="btn btn-icon" id="reset-btn" aria-label="Timer'ı sıfırla">↺</button>
+            </div>
+
+            <div class="shortcuts-hint" id="shortcuts-hint">
+                <span class="shortcut-key">Space</span> <span data-i18n="shortcutStart">Başlat/Duraklat</span>
+                &nbsp;·&nbsp;
+                <span class="shortcut-key">Esc</span> <span data-i18n="shortcutEsc">Sıfırla</span>
             </div>
 
             <!-- Günlük Hedef -->
@@ -1101,23 +287,15 @@
                 <div class="goal-progress-label" id="goal-progress-label">0 / 4 seans</div>
             </div>
 
-            <!-- Görev Listesi -->
-            <div class="task-section">
-                <div class="task-header">
-                    <span class="track-label" data-i18n="taskLabel">📋 GÖREVLER</span>
-                    <span class="task-count" id="task-count">0/0</span>
-                </div>
-                <div class="task-input-row">
-                    <input type="text" id="task-input" maxlength="60" data-i18n-placeholder="taskPlaceholder" placeholder="Yeni görev ekle..." aria-label="Görev ekle">
-                    <button class="custom-link-save" id="task-add" aria-label="Görev ekle"><i class="fas fa-plus"></i></button>
-                </div>
-                <ul class="task-list" id="task-list"></ul>
-            </div>
+
 
         </div>
 
         <!-- Right Column - Music & Settings -->
         <div class="music-section">
+            <div class="sound-card">
+            <h2 class="section-heading" data-i18n="soundTitle">Arka planın, senin ritmin.</h2>
+            <p class="section-description" data-i18n="soundDescription">Dışarıdaki sesi biraz kıs.</p>
             <div class="source-selector" role="group" aria-label="Müzik kaynağı seç">
                 <button class="source-btn local active" data-source="local" aria-pressed="true">
                     <i class="fas fa-music"></i> Yerel
@@ -1134,9 +312,9 @@
             </div>
 
             <div class="presets" id="presets">
-                <button class="preset-btn" data-preset="deepRain">🌧️ Deep Rain</button>
-                <button class="preset-btn" data-preset="forestCalm">🌲 Forest Calm</button>
-                <button class="preset-btn" data-preset="cafeStudy">☕ Cafe Study</button>
+                <button class="preset-btn" data-preset="deepRain">Yağmurlu gün</button>
+                <button class="preset-btn" data-preset="forestCalm">Orman yolu</button>
+                <button class="preset-btn" data-preset="cafeStudy">Kafe köşesi</button>
             </div>
 
             <div class="youtube-container" id="youtube-container">
@@ -1172,31 +350,45 @@
 
             <div class="mixer-panel" id="local-mixer" aria-label="Ses mixer'ı">
                 <div class="audio-track">
-                    <span class="track-label">🌧️ RAIN</span>
+                    <span class="track-label" data-i18n="soundrain">↟ Yağmur</span>
                     <input type="range" class="vol-slider" data-src="rain" min="0" max="1" step="0.01" value="0" aria-label="Yağmur sesi hacmi">
                 </div>
                 <div class="audio-track">
-                    <span class="track-label">🌲 FOREST</span>
+                    <span class="track-label" data-i18n="soundforest">♧ Orman</span>
                     <input type="range" class="vol-slider" data-src="forest" min="0" max="1" step="0.01" value="0" aria-label="Orman sesi hacmi">
                 </div>
                 <div class="audio-track">
-                    <span class="track-label">🔥 FIRE</span>
+                    <span class="track-label" data-i18n="soundfire">♨ Ateş</span>
                     <input type="range" class="vol-slider" data-src="fire" min="0" max="1" step="0.01" value="0" aria-label="Ateş sesi hacmi">
                 </div>
                 <div class="audio-track">
-                    <span class="track-label">☕ CAFE</span>
+                    <span class="track-label" data-i18n="soundcafe">☕ Kafe</span>
                     <input type="range" class="vol-slider" data-src="cafe" min="0" max="1" step="0.01" value="0" aria-label="Kafe sesi hacmi">
                 </div>
             </div>
 
             <div class="cycle-setting">
-                <span class="track-label">🔁 DÖNGÜ</span>
+                <span class="track-label">Mola aralığı</span>
                 <div class="cycle-controls">
                     <button class="cycle-btn" id="cycle-dec" aria-label="Döngüyü azalt">−</button>
                     <span id="cycle-count">4</span>
                     <button class="cycle-btn" id="cycle-inc" aria-label="Döngüyü artır">+</button>
                     <span class="cycle-label">seansta uzun mola</span>
                 </div>
+            </div>
+
+            </div>
+            <!-- Görev Listesi -->
+            <div class="task-section">
+                <div class="task-header">
+                    <span class="track-label" data-i18n="taskLabel">📋 GÖREVLER</span>
+                    <span class="task-count" id="task-count">0/0</span>
+                </div>
+                <div class="task-input-row">
+                    <input type="text" id="task-input" maxlength="60" data-i18n-placeholder="taskPlaceholder" placeholder="Yeni görev ekle..." aria-label="Görev ekle">
+                    <button class="custom-link-save" id="task-add" aria-label="Görev ekle"><i class="fas fa-plus"></i></button>
+                </div>
+                <ul class="task-list" id="task-list" data-empty="Aklındakini buraya bırak. Bir görevle başla."></ul>
             </div>
 
             <div class="notification-prompt" id="notification-prompt">
@@ -1206,13 +398,9 @@
             <div class="footer">
                 TAMAMLANAN OTURUMLAR: <span id="streak">0</span>
             </div>
-            <div class="shortcuts-hint" id="shortcuts-hint">
-                <span class="shortcut-key">Space</span> <span data-i18n="shortcutStart">Başlat/Duraklat</span>
-                &nbsp;·&nbsp;
-                <span class="shortcut-key">Esc</span> <span data-i18n="shortcutEsc">Sıfırla</span>
-            </div>
-            <p class="footer-copyright" data-i18n="copyrightLine">© 2026 Berfin Nida — Kod & Tasarım</p>
+
         </div>
+            <p class="footer-copyright" data-i18n="copyrightLine">© 2026 Berfin Nida — Kod & Tasarım</p>
     </main>
 
     <!-- Install Prompt -->
@@ -1339,64 +527,82 @@
         // ── i18n ──────────────────────────────────────────
         const i18n = {
             tr: {
-                modeFocus:    'ODAK (25 dk)',
-                modeShort:    'KISA MOLA (5 dk)',
-                modeLong:     'UZUN MOLA (15 dk)',
-                modeCustom:   'ÖZEL',
-                startFocus:   'ODAK BAŞLAT',
-                startBreak:   'MOLA BAŞLAT',
+                workspaceLabel: 'KENDİNE BİR ALAN AÇ', introTitle: 'Az şey yap.', introEmphasis: 'Tam odaklan.',
+                introNote: 'Bir görev, sakin bir zihin. Gerisi biraz bekleyebilir.', sessionLabel: 'ODAK ALANI',
+                sessionStatus: 'KENDİ RİTMİNDE', timerCaption: 'Şimdi sadece buradasın.',
+                soundTitle: 'Arka planın, senin ritmin.', soundDescription: 'Dışarıdaki sesi biraz kıs.',
+                soundrain: '↟ Yağmur',
+                soundforest: '♧ Orman',
+                soundfire: '♨ Ateş',
+                soundcafe: '☕ Kafe',
+                taskEmpty: 'Aklındakini buraya bırak. Bir görevle başla.',
+                modeFocus:    'Odak',
+                modeShort:    'Kısa mola',
+                modeLong:     'Uzun mola',
+                modeCustom:   'Özel',
+                startFocus:   'Odaklanmaya başla',
+                startBreak:   'Molayı başlat',
                 pause:        '⏸ Duraklat',
-                themeDay:     '☀️ GÜNDÜZ',
-                themeNight:   '🌙 GECE',
-                statsBtn:     '📊 İSTATİSTİKLER',
+                themeDay:     '☀ Açık',
+                themeNight:   '☾ Koyu',
+                statsBtn:     'İstatistikler',
                 statsTitle:   '📊 İstatistikler',
                 exportSessions: '↓ Seansları CSV indir',
                 labelFocus:   'ODAK',
                 labelShort:   'KISA MOLA',
                 labelLong:    'UZUN MOLA',
-                labelCustom:  'ÖZEL',
+                labelCustom:  'Özel',
                 streakLabel:  'TAMAMLANAN OTURUMLAR',
                 cycleLabel:   'seansta uzun mola',
                 notifBtn:     '🔔 Bildirimlere İzin Ver',
                 installText:  "Zenith Focus'u uygulama olarak yükleyin",
                 installAccept:'Yükle',
                 installDismiss:'Kapat',
-                langBtn:      '🌐 TR',
-                taskLabel:    '📋 GÖREVLER',
+                langBtn:      'TR',
+                taskLabel:    'Sırada ne var?',
                 taskPlaceholder: 'Yeni görev ekle...',
-                goalLabel:    '🎯 GÜNLÜK HEDEF',
+                goalLabel:    'Günlük niyetin',
                 goalUnit:     'seans',
                 shortcutStart:'Başlat/Duraklat',
                 shortcutEsc:  'Sıfırla',
                 copyrightLine:'© 2026 Berfin Nida — Kod & Tasarım',
             },
             en: {
-                modeFocus:    'FOCUS (25 min)',
-                modeShort:    'SHORT BREAK (5 min)',
-                modeLong:     'LONG BREAK (15 min)',
-                modeCustom:   'CUSTOM',
-                startFocus:   'START FOCUS',
-                startBreak:   'START BREAK',
+                workspaceLabel: 'A LITTLE SPACE FOR YOURSELF', introTitle: 'Do less.', introEmphasis: 'Focus fully.',
+                introNote: 'One task, a quieter mind. Everything else can wait.', sessionLabel: 'FOCUS SPACE',
+                sessionStatus: 'AT YOUR OWN PACE', timerCaption: 'Be here, for a little while.',
+                soundTitle: 'Set your own atmosphere.', soundDescription: 'Turn the outside world down.',
+                soundrain: '↟ Rain',
+                soundforest: '♧ Forest',
+                soundfire: '♨ Fire',
+                soundcafe: '☕ Café',
+                taskEmpty: 'A clear mind starts with one small task.',
+                modeFocus:    'Focus',
+                modeShort:    'Short break',
+                modeLong:     'Long break',
+                modeCustom:   'Custom',
+                startFocus:   'Start focusing',
+                startBreak:   'Start break',
                 pause:        '⏸ Pause',
-                themeDay:     '☀️ DAY',
-                themeNight:   '🌙 NIGHT',
-                statsBtn:     '📊 STATS',
+                themeDay:     '☀ Light',
+                themeNight:   '☾ Dark',
+                statsBtn:     'Statistics',
                 statsTitle:   '📊 Statistics',
                 exportSessions: '↓ Download sessions as CSV',
                 labelFocus:   'FOCUS',
                 labelShort:   'SHORT BREAK',
                 labelLong:    'LONG BREAK',
-                labelCustom:  'CUSTOM',
+                labelCustom:  'Custom',
                 streakLabel:  'COMPLETED SESSIONS',
                 cycleLabel:   'sessions before long break',
                 notifBtn:     '🔔 Enable Notifications',
                 installText:  'Install Zenith Focus as an app',
                 installAccept:'Install',
                 installDismiss:'Dismiss',
-                langBtn:      '🌐 EN',
-                taskLabel:    '📋 TASKS',
+                langBtn:      'EN',
+                taskLabel:    'What’s next?',
                 taskPlaceholder: 'Add a new task...',
-                goalLabel:    '🎯 DAILY GOAL',
+                goalLabel:    'Daily intention',
                 goalUnit:     'sessions',
                 shortcutStart:'Start/Pause',
                 shortcutEsc:  'Reset',
@@ -1411,7 +617,7 @@
                     focus: { time: 25 * 60, label: 'ODAK' },
                     short: { time: 5 * 60, label: 'KISA MOLA' },
                     long: { time: 15 * 60, label: 'UZUN MOLA' },
-                    custom: { time: 25 * 60, label: 'ÖZEL' }
+                    custom: { time: 25 * 60, label: 'Özel' }
                 };
 
                 this.customTime = 25;
@@ -1421,7 +627,7 @@
                 this.isRunning = false;
                 this.interval = null;
                 this.settingsKey = 'zenith_settings_v1';
-                this.theme = 'dark';
+                this.theme = 'light';
                 this.lang = storage.getItem('zenith_lang') === 'en' ? 'en' : 'tr';
                 this.sessions = 0;
                 this.focusCount = 0; // Pomodoro döngüsü sayacı
@@ -1572,6 +778,8 @@
                 // Cycle label
                 const cycleLabelEl = document.querySelector('.cycle-setting .cycle-label');
                 if (cycleLabelEl) cycleLabelEl.textContent = t.cycleLabel;
+
+                this.dom.taskList.dataset.empty = t.taskEmpty;
 
                 // Task input placeholder
                 if (this.dom.taskInput) this.dom.taskInput.placeholder = t.taskPlaceholder;
@@ -1801,9 +1009,7 @@
                         });
                     }
                 } else {
-                    if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-                        this.toggleTheme();
-                    }
+                    this.dom.body.setAttribute('data-theme', this.theme);
                 }
             }
 
@@ -2101,6 +1307,7 @@
                 setTimeout(() => this.dom.body.classList.remove('theme-transitioning'), 420);
 
                 this.dom.body.setAttribute('data-theme', this.theme);
+                document.querySelector('meta[name="theme-color"]').content = this.theme === 'dark' ? '#181e1a' : '#f5f4ef';
                 const t = i18n[this.lang];
                 if (this.dom.themeBtn) this.dom.themeBtn.textContent = this.theme === 'dark' ? t.themeNight : t.themeDay;
                 if (this.dom.themeBtnMobile) this.dom.themeBtnMobile.textContent = this.theme === 'dark' ? '🌙' : '☀️';
