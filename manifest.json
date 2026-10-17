@@ -1,0 +1,33 @@
+{
+  "name": "Zenith Focus",
+  "short_name": "Zenith",
+  "description": "Deep Work Suite - Odaklanma ve Pomodoro Timer",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#030305",
+  "theme_color": "#a5b4fc",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "lang": "tr",
+  "dir": "ltr",
+  "scope": "./",
+  "prefer_related_applications": false,
+  "id": "./"
+}

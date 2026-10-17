@@ -9,7 +9,12 @@
 A minimalist **deep work / focus web application** built with HTML, CSS and JavaScript.
 
 🌐 **Live Demo**
-https://zenith-focus-five.vercel.app/
+https://zenith-focus-five.vercel.app
+
+</div>
+
+---
+
 # ✨ Overview
 
 **Zenith Focus** is a minimalist productivity application inspired by the **Pomodoro technique**.
@@ -100,8 +105,8 @@ assets/
   ├── cafe.mp3
   ├── complete.mp3
   ├── fire.mp3
-  ├── forest.mp3
-  └── rain.mp3
+  ├── forest.wav
+  └── rain.wav
 
 icon-192.png
 icon-512.png
@@ -124,16 +129,23 @@ Users can:
 
 ---
 
-# 🔮 Future Improvements
+# Latest improvements
 
-Planned improvements:
+- Recover running or paused timers after refreshing the page.
+- Download session history as CSV from Statistics.
+- Daily session goals, task tracking, weekly charts and focus streaks.
+- Turkish and English interface, keyboard controls and accessible dialogs.
+- Bundled offline ambience with support for audio byte ranges.
 
-• focus analytics dashboard
-• weekly focus statistics
-• focus streak tracking
-• task management system
-• additional ambient sounds
-• customizable UI themes
+## Run and test
+
+No build or dependencies are required. Serve this folder with `python3 -m http.server 8000`, then open http://localhost:8000.
+
+Run regression tests with `node --test tests/regression.mjs` (Node.js 20+).
+
+Timers and history are saved in browser storage, separately for each origin. Audio resumes after a user interaction if the browser blocks autoplay.
+
+Deploy the repository root as a static site on Vercel, with no framework or build command.
 
 ---
 
