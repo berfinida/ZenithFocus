@@ -134,7 +134,7 @@ test('offline audio supports normal, suffix and invalid byte ranges', async () =
 test('worker activation preserves unrelated application caches', async () => {
   const { context, handlers } = worker();
   const deleted = [];
-  context.caches = { keys: async () => ['other-app-v1', 'zenith-focus-v2', 'zenith-focus-v6'], delete: async name => deleted.push(name) };
+  context.caches = { keys: async () => ['other-app-v1', 'zenith-focus-v2', 'zenith-focus-v7'], delete: async name => deleted.push(name) };
   let pending;
   handlers.activate({ waitUntil: promise => { pending = promise; } });
   await pending;
@@ -204,4 +204,40 @@ test('CSV export preserves exact duration and ISO timestamps', () => {
   assert.equal(app.sessionsCSV(), 'timestamp,mode,duration_seconds,duration_minutes\r\n2026-10-17T12:00:00.000Z,custom,91,1.52');
   app.sessionHistory = [];
   assert.equal(app.sessionsCSV().split('\r\n').length, 1);
+});
+
+function appearanceApp(saved) {
+  const result = setup({ zenith_appearance_v1: saved });
+  const attributes = {};
+  Object.assign(result.app, { lang: 'tr', dom: { body: { setAttribute: (key, value) => attributes[key] = value } },
+    saveSettings() {}, updateAppearanceControls() {} });
+  return { ...result, attributes };
+}
+
+test('invalid appearance preferences safely fall back to a full forest workspace', () => {
+  for (const saved of ['null', '{broken', '[]', '{"environment":"unknown","minimal":"true"}']) {
+    const { app, attributes } = appearanceApp(saved);
+    app.loadAppearance();
+    assert.equal(attributes['data-environment'], 'forest');
+    assert.equal(attributes['data-layout'], 'full');
+  }
+});
+
+test('environment and minimal layout persist independently without changing an active timer', () => {
+  const { app, values, attributes } = appearanceApp('{"environment":"forest","minimal":false}');
+  Object.assign(app, { timeLeft: 900, deadline: 12345, isRunning: true, currentSource: 'youtube' });
+  app.loadAppearance();
+  app.setEnvironment('coast');
+  app.setMinimal(true);
+  assert.equal(app.timeLeft, 900);
+  assert.equal(app.deadline, 12345);
+  assert.equal(app.isRunning, true);
+  assert.equal(app.currentSource, 'youtube');
+  assert.equal(attributes['data-layout'], 'minimal');
+  assert.deepEqual(JSON.parse(values.get('zenith_appearance_v1')), { environment: 'coast', minimal: true });
+  app.setEnvironment('paper');
+  assert.equal(attributes['data-theme'], 'light');
+  assert.equal(app.minimal, true);
+  app.setEnvironment('invalid');
+  assert.equal(app.environment, 'paper');
 });

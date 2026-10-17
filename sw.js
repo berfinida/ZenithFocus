@@ -1,12 +1,13 @@
 // All paths follow the registration scope, including GitHub Pages subdirectories.
 const CACHE_PREFIX = 'zenith-focus-';
-const CACHE_NAME = `${CACHE_PREFIX}v6`;
+const CACHE_NAME = `${CACHE_PREFIX}v7`;
 const scopeUrl = new URL(self.registration.scope);
 const assetUrl = path => new URL(path, scopeUrl).href;
 const ASSETS_TO_CACHE = [
   './', 'index.html', 'manifest.json', 'icon-192.png', 'icon-512.png',
   'assets/rain.wav', 'assets/forest.wav', 'assets/fire.mp3',
-  'assets/cafe.mp3', 'assets/complete.mp3'
+  'assets/cafe.mp3', 'assets/complete.mp3',
+  'assets/themes/forest.jpg', 'assets/themes/coast.jpg'
 ].map(assetUrl);
 
 self.addEventListener('install', event => {

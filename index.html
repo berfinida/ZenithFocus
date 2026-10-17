@@ -205,9 +205,73 @@
             .footer-copyright { margin-top: 4px; }
         }
         @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+        /* Environment and layout preferences are independent. */
+        body { position: relative; isolation: isolate; }
+        body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--scene, none) center / cover no-repeat; }
+        body[data-environment="forest"], body[data-environment="coast"], body[data-environment="sunset"] {
+            --text-main: #f3f5f2; --text-dim: #bcc8c3; --border: #ffffff24; --card: #152321e8;
+            --accent: #c2d5bc; --accent-glow: #c2d5bc19; --progress-bg: #ffffff20; --button-bg: #c2d5bc; --button-text: #1c3026;
+        }
+        body[data-environment="forest"] { --bg: #142820; --scene: linear-gradient(#0b1a1a55, #0c211ab3), url('assets/themes/forest.jpg'); }
+        body[data-environment="coast"] { --bg: #132b39; --card: #102838e8; --accent: #c0dce7; --accent-glow: #c0dce719; --button-bg: #c0dce7; --button-text: #183143; --scene: linear-gradient(#061a2c40, #0b253c99), url('assets/themes/coast.jpg'); }
+        body[data-environment="sunset"] { --bg: #352a37; --card: #342736eb; --accent: #ecc3af; --accent-glow: #ecc3af19; --button-bg: #ecc3af; --button-text: #462d39; --scene: radial-gradient(ellipse at 70% 40%, #f0ae7b99, transparent 45%), linear-gradient(165deg, #343449 5%, #956b7d 43%, #bd8f7f 65%, #45384e 100%); }
+        body[data-environment="paper"] .timer-section::before { display: none; }
+        body[data-environment="paper"] #timer-display { text-shadow: none; }
+        .brand::before, .mode-btn.active, .btn-main { background: var(--button-bg, #4e75f5); color: var(--button-text, white); border-color: transparent; box-shadow: none; }
+        .btn-main:hover { background: var(--button-bg, #6084ff); filter: brightness(1.07); }
+        .timer-section::before { background: radial-gradient(ellipse at 50% 38%, var(--accent-glow), transparent 65%); }
+        body:is([data-environment="forest"], [data-environment="coast"], [data-environment="sunset"]) .timer-section { background: linear-gradient(145deg, var(--card), #101e22b3); backdrop-filter: blur(18px); }
+        body:is([data-environment="forest"], [data-environment="coast"], [data-environment="sunset"]) :is(.sound-card, .task-section) { backdrop-filter: blur(18px); }
+        .environment-picker { position: relative; }
+        .environment-picker summary { list-style: none; user-select: none; cursor: pointer; }
+        .environment-picker summary::-webkit-details-marker { display: none; }
+        .environment-picker summary::before { content: '◈'; margin-right: 6px; color: var(--accent); }
+        .environment-picker[open] summary { background: var(--card); border-color: var(--accent); }
+        .environment-menu { position: absolute; z-index: 120; top: calc(100% + 12px); right: 0; width: 340px; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 18px 60px #0005; backdrop-filter: blur(30px); }
+        .environment-menu h2 { font-size: 15px; font-weight: 500; margin-bottom: 7px; }
+        .environment-menu p { color: var(--text-dim); font-size: 11px; line-height: 1.7; margin-bottom: 15px; }
+        .environment-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+        .environment-option { min-width: 0; padding: 4px; border-radius: 9px; background: transparent; border: 1px solid var(--border); color: var(--text-main); text-align: left; }
+        .environment-option[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+        .environment-preview { display: block; height: 56px; border-radius: 5px; background-size: cover; background-position: center; }
+        .environment-option span:last-child { display: block; font-size: 10px; padding: 8px 3px 4px; }
+        .preview-forest { background-image: url('assets/themes/forest.jpg'); }
+        .preview-coast { background-image: url('assets/themes/coast.jpg'); }
+        .preview-sunset { background-image: linear-gradient(155deg, #464560, #d69a86 70%, #77607c); }
+        .preview-night { background: radial-gradient(ellipse at center, #263c6d, #090d16); }
+        .preview-paper { background: #f4f6fb; border: 1px solid #dfe5f0; }
+        #minimal-btn[aria-pressed="true"] { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
+        .environment-credit { display: none; grid-column: 1 / -1; color: var(--text-dim); font-size: 9px; }
+        body:is([data-environment="forest"], [data-environment="coast"]) .environment-credit { display: block; }
+        .environment-credit a { color: inherit; text-underline-offset: 3px; }
+        body[data-layout="minimal"] .zenith-app { display: flex; flex-direction: column; max-width: 760px; min-height: calc(100svh - 116px); justify-content: center; padding: 25px 0; }
+        body[data-layout="minimal"] :is(.workspace-intro, .music-section, .daily-goal-section, .session-topline, .shortcuts-hint, .footer-copyright, .environment-credit) { display: none; }
+        body[data-layout="minimal"] .timer-section { background: transparent; border: 0; backdrop-filter: none; padding: 30px 20px; overflow: visible; }
+        body[data-layout="minimal"] .timer-section::before { display: none; }
+        body[data-layout="minimal"] .progress-ring-container { height: 300px; }
+        body[data-layout="minimal"] #timer-display { font-size: clamp(90px, 15vw, 160px); font-weight: 400; }
+        body[data-layout="minimal"] .control-group { margin-bottom: 0; }
+        @media (max-width: 700px) {
+            .environment-menu { position: fixed; top: 80px; left: 16px; right: 16px; width: auto; max-width: 400px; margin-left: auto; }
+            .brand span { display: none; }
+            #theme-btn { display: none; }
+            .header-actions { gap: 4px; }
+            .theme-toggle, .stats-toggle { font-size: 10px; padding-inline: 7px; }
+            body[data-layout="minimal"] .zenith-app { min-height: calc(100svh - 90px); padding: 16px 0; }
+            body[data-layout="minimal"] .timer-section { padding-inline: 0; }
+            body[data-layout="minimal"] .progress-ring-container { height: 250px; }
+            body[data-layout="minimal"] #timer-display { font-size: clamp(86px, 24vw, 115px); }
+        }
+        @media (max-width: 380px) {
+            .brand { font-size: 0; gap: 0; }
+            .brand::before { width: 27px; height: 29px; font-size: 25px; }
+            .header-actions { gap: 3px; }
+            .theme-toggle, .stats-toggle { font-size: 9px; padding-inline: 6px; }
+        }
     </style>
 </head>
-<body data-theme="dark" role="application" aria-label="Zenith Focus - Derin Çalışma Uygulaması">
+<body data-theme="dark" data-environment="forest" data-layout="full" role="application" aria-label="Zenith Focus - Derin Çalışma Uygulaması">
 
     <div class="bg-gradient" aria-hidden="true"></div>
 
@@ -216,6 +280,21 @@
         <div class="brand">zenith<span>focus workspace</span></div>
         <div class="header-actions">
             <button class="theme-toggle" id="lang-btn" aria-label="Dil değiştir">🌐 TR</button>
+            <details class="environment-picker" id="environment-picker">
+                <summary class="theme-toggle" data-i18n="environments">Ortamlar</summary>
+                <div class="environment-menu">
+                    <h2 data-i18n="environmentTitle">Sana iyi gelen bir yer.</h2>
+                    <p data-i18n="environmentDescription">Manzaranı seç, kendi ritminde çalış.</p>
+                    <div class="environment-options" role="group" aria-label="Ortam seçimi">
+                        <button class="environment-option" data-environment-choice="forest" aria-pressed="false"><span class="environment-preview preview-forest" aria-hidden="true"></span><span data-i18n="envforest">Orman</span></button>
+                        <button class="environment-option" data-environment-choice="coast" aria-pressed="false"><span class="environment-preview preview-coast" aria-hidden="true"></span><span data-i18n="envcoast">Deniz</span></button>
+                        <button class="environment-option" data-environment-choice="sunset" aria-pressed="false"><span class="environment-preview preview-sunset" aria-hidden="true"></span><span data-i18n="envsunset">Gün batımı</span></button>
+                        <button class="environment-option" data-environment-choice="night" aria-pressed="false"><span class="environment-preview preview-night" aria-hidden="true"></span><span data-i18n="envnight">Gece</span></button>
+                        <button class="environment-option" data-environment-choice="paper" aria-pressed="false"><span class="environment-preview preview-paper" aria-hidden="true"></span><span data-i18n="envpaper">Düz & açık</span></button>
+                    </div>
+                </div>
+            </details>
+            <button class="theme-toggle" id="minimal-btn" aria-pressed="false">Sade görünüm</button>
             <button class="theme-toggle" id="theme-btn" aria-label="Tema değiştir">🌙 GECE MODU</button>
             <button class="stats-toggle" id="stats-btn" aria-label="İstatistikler">📊 İSTATİSTİKLER</button>
         </div>
@@ -405,6 +484,7 @@ Gerisi biraz bekleyebilir.</p>
 
         </div>
             <p class="footer-copyright" data-i18n="copyrightLine">© 2026 Berfin Nida — Kod & Tasarım</p>
+        <p class="environment-credit"><span data-i18n="photoCredit">Doğa fotoğrafları:</span> <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer">Unsplash</a></p>
     </main>
 
     <!-- Install Prompt -->
@@ -531,6 +611,10 @@ Gerisi biraz bekleyebilir.</p>
         // ── i18n ──────────────────────────────────────────
         const i18n = {
             tr: {
+                environments: 'Ortamlar', environmentTitle: 'Sana iyi gelen bir yer.',
+                environmentDescription: 'Manzaranı seç, kendi ritminde çalış.',
+                envforest: 'Orman', envcoast: 'Deniz', envsunset: 'Gün batımı', envnight: 'Gece', envpaper: 'Düz & açık',
+                minimalView: 'Sade görünüm', fullView: 'Tam görünüm', photoCredit: 'Doğa fotoğrafları:',
                 workspaceLabel: 'DAHA AZ GÜRÜLTÜ. DAHA ÇOK ODAK.', introTitle: 'Zihnini boşalt.', introEmphasis: 'Akışa gir.',
                 introNote: 'Burası senin odak alanın. Dış dünya biraz bekleyebilir.', sessionLabel: 'ODAK ALANI',
                 sessionStatus: 'KENDİ RİTMİNDE', timerCaption: 'Şimdi sadece buradasın.',
@@ -572,6 +656,10 @@ Gerisi biraz bekleyebilir.</p>
                 copyrightLine:'© 2026 Berfin Nida — Kod & Tasarım',
             },
             en: {
+                environments: 'Atmosphere', environmentTitle: 'Somewhere you can settle in.',
+                environmentDescription: 'Choose your scenery. Work at your own pace.',
+                envforest: 'Forest', envcoast: 'Ocean', envsunset: 'Sunset', envnight: 'Night', envpaper: 'Plain & light',
+                minimalView: 'Minimal view', fullView: 'Full view', photoCredit: 'Nature photography:',
                 workspaceLabel: 'LESS NOISE. MORE FOCUS.', introTitle: 'Clear your mind.', introEmphasis: 'Find your flow.',
                 introNote: 'Your space for deep work. The outside world can wait.', sessionLabel: 'FOCUS SPACE',
                 sessionStatus: 'AT YOUR OWN PACE', timerCaption: 'Be here, for a little while.',
@@ -729,6 +817,7 @@ Gerisi biraz bekleyebilir.</p>
                 this.checkNotificationPermission();
                 this.preloadAudio();
                 this.loadAppleLink();
+                this.loadAppearance();
                 this.applyLang();
                 this.restoreTimer();
             }
@@ -742,6 +831,7 @@ Gerisi biraz bekleyebilir.</p>
             applyLang() {
                 const t = i18n[this.lang];
                 document.documentElement.lang = this.lang;
+                this.updateAppearanceControls();
 
                 // data-i18n attribute'lu tüm elementleri güncelle
                 document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -1038,6 +1128,20 @@ Gerisi biraz bekleyebilir.</p>
             bindEvents() {
                 this.dom.startBtn.onclick = () => this.toggleTimer();
                 this.dom.resetBtn.onclick = () => this.resetTimer();
+                document.querySelectorAll('[data-environment-choice]').forEach(button => {
+                    button.onclick = () => this.setEnvironment(button.dataset.environmentChoice);
+                });
+                document.getElementById('minimal-btn').onclick = () => this.setMinimal(!this.minimal);
+                const picker = document.getElementById('environment-picker');
+                document.addEventListener('click', event => {
+                    if (picker.open && !picker.contains(event.target)) picker.open = false;
+                });
+                picker.addEventListener('keydown', event => {
+                    if (event.key === 'Escape') {
+                        event.preventDefault(); event.stopPropagation(); picker.open = false;
+                        picker.querySelector('summary').focus();
+                    }
+                });
                 document.getElementById('export-sessions').onclick = () => this.exportSessions();
                 window.addEventListener('pagehide', () => this.saveTimer());
                 if (this.dom.langBtn) this.dom.langBtn.onclick = () => this.toggleLang();
@@ -1101,6 +1205,7 @@ Gerisi biraz bekleyebilir.</p>
                 });
 
                 document.onkeydown = (e) => {
+                    if (document.getElementById('environment-picker').open) return;
                     const isInputElement = ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) || e.target.isContentEditable;
                     if (document.querySelector('.finish-modal')) return;
                     if (this.dom.statsPanel.classList.contains('active')) {
@@ -1113,7 +1218,7 @@ Gerisi biraz bekleyebilir.</p>
                         }
                         return;
                     }
-                    if (e.code === 'Space' && !isInputElement && !['BUTTON', 'A'].includes(e.target.tagName) && !e.repeat) { e.preventDefault(); this.toggleTimer(); }
+                    if (e.code === 'Space' && !isInputElement && !['BUTTON', 'A', 'SUMMARY'].includes(e.target.tagName) && !e.repeat) { e.preventDefault(); this.toggleTimer(); }
                     if (e.code === 'Escape') { e.preventDefault(); this.handleEscape(); }
                 };
             }
@@ -1303,19 +1408,51 @@ Gerisi biraz bekleyebilir.</p>
                 }
             }
 
-            toggleTheme() {
-                this.theme = this.theme === 'dark' ? 'light' : 'dark';
+            loadAppearance() {
+                const saved = storage.read('zenith_appearance_v1', {});
+                const appearance = saved && typeof saved === 'object' ? saved : {};
+                this.environment = ['forest', 'coast', 'sunset', 'night', 'paper'].includes(appearance.environment)
+                    ? appearance.environment : 'forest';
+                this.minimal = appearance.minimal === true;
+                this.applyAppearance();
+            }
 
-                // Transition'ı sadece geçiş süresince aktif et
-                this.dom.body.classList.add('theme-transitioning');
-                setTimeout(() => this.dom.body.classList.remove('theme-transitioning'), 420);
+            setEnvironment(environment) {
+                if (!['forest', 'coast', 'sunset', 'night', 'paper'].includes(environment)) return;
+                this.environment = environment;
+                this.applyAppearance();
+            }
 
+            setMinimal(minimal) {
+                this.minimal = minimal === true;
+                this.applyAppearance();
+            }
+
+            applyAppearance() {
+                this.theme = this.environment === 'paper' ? 'light' : 'dark';
                 this.dom.body.setAttribute('data-theme', this.theme);
-                document.querySelector('meta[name="theme-color"]').content = this.theme === 'dark' ? '#090d16' : '#f4f6fb';
-                const t = i18n[this.lang];
-                if (this.dom.themeBtn) this.dom.themeBtn.textContent = this.theme === 'dark' ? t.themeNight : t.themeDay;
-                if (this.dom.themeBtnMobile) this.dom.themeBtnMobile.textContent = this.theme === 'dark' ? '🌙' : '☀️';
+                this.dom.body.setAttribute('data-environment', this.environment);
+                this.dom.body.setAttribute('data-layout', this.minimal ? 'minimal' : 'full');
+                const colors = { forest: '#142820', coast: '#132b39', sunset: '#352a37', night: '#090d16', paper: '#f4f6fb' };
+                document.querySelector('meta[name="theme-color"]').content = colors[this.environment];
+                this.updateAppearanceControls();
+                storage.setItem('zenith_appearance_v1', JSON.stringify({ environment: this.environment, minimal: this.minimal }));
                 this.saveSettings();
+            }
+
+            updateAppearanceControls() {
+                const t = i18n[this.lang];
+                document.querySelectorAll('[data-environment-choice]').forEach(button => {
+                    button.setAttribute('aria-pressed', String(button.dataset.environmentChoice === this.environment));
+                });
+                const minimalButton = document.getElementById('minimal-btn');
+                minimalButton.setAttribute('aria-pressed', String(this.minimal === true));
+                minimalButton.textContent = this.minimal ? t.fullView : t.minimalView;
+                if (this.dom.themeBtn) this.dom.themeBtn.textContent = this.theme === 'dark' ? t.themeNight : t.themeDay;
+            }
+
+            toggleTheme() {
+                this.setEnvironment(this.theme === 'dark' ? 'paper' : 'night');
             }
 
             toggleTimer() {
