@@ -4,8 +4,8 @@
   "description": "Deep Work Suite - Odaklanma ve Pomodoro Timer",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f5f4ef",
-  "theme_color": "#f5f4ef",
+  "background_color": "#090d16",
+  "theme_color": "#090d16",
   "orientation": "portrait",
   "icons": [
     {

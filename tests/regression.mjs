@@ -134,7 +134,7 @@ test('offline audio supports normal, suffix and invalid byte ranges', async () =
 test('worker activation preserves unrelated application caches', async () => {
   const { context, handlers } = worker();
   const deleted = [];
-  context.caches = { keys: async () => ['other-app-v1', 'zenith-focus-v2', 'zenith-focus-v5'], delete: async name => deleted.push(name) };
+  context.caches = { keys: async () => ['other-app-v1', 'zenith-focus-v2', 'zenith-focus-v6'], delete: async name => deleted.push(name) };
   let pending;
   handlers.activate({ waitUntil: promise => { pending = promise; } });
   await pending;

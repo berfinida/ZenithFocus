@@ -5,24 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zenith Focus // Deep Work Suite</title>
     <meta name="description" content="Deep Work Suite - Odaklanma ve Pomodoro Timer">
-    <meta name="theme-color" content="#f5f4ef">
+    <meta name="theme-color" content="#090d16">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
 
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root, [data-theme="light"] {
-            --bg: #f5f4ef; --card: #fdfcf9; --accent: #53765e; --accent-glow: #53765e18;
-            --text-main: #292e29; --text-dim: #7b8078; --border: #e5e6de;
-            --progress-bg: #e5e7de; --spotify: #267b47; --youtube: #ba5147; --apple: #ad5469;
+        :root, [data-theme="dark"] {
+            --bg: #090d16; --card: #111723; --accent: #7299ff; --accent-glow: #7299ff18;
+            --text-main: #f2f5fd; --text-dim: #8c98af; --border: #202a3c;
+            --progress-bg: #27334a; --spotify: #267b47; --youtube: #ba5147; --apple: #ad5469;
         }
-        [data-theme="dark"] {
-            --bg: #181e1a; --card: #222a24; --accent: #b6caa6; --accent-glow: #b6caa612;
-            --text-main: #eceee5; --text-dim: #a2aa9c; --border: #354035; --progress-bg: #354035;
+        [data-theme="light"] {
+            --bg: #f4f6fb; --card: #ffffff; --accent: #3e68ea; --accent-glow: #3e68ea10;
+            --text-main: #18223c; --text-dim: #69758d; --border: #dfe5f0; --progress-bg: #e1e7f2;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { min-height: 100svh; background: var(--bg); color: var(--text-main); font-family: 'DM Sans', sans-serif; padding: 0 40px 24px; }
@@ -33,47 +33,49 @@
         button:hover { filter: brightness(.96); }
         :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
         .bg-gradient, .mobile-only { display: none; }
-        .app-header { max-width: 1160px; height: 96px; margin: auto; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+        .app-header { max-width: 1240px; height: 88px; margin: auto; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
         .brand { display: flex; align-items: center; gap: 11px; font-size: 19px; font-weight: 600; letter-spacing: -.8px; }
-        .brand::before { content: '✳'; display: grid; place-items: center; width: 31px; height: 31px; color: var(--accent); font-size: 35px; font-weight: 400; }
-        .brand span { font-weight: 400; color: var(--text-dim); }
+        .brand::before { content: 'z'; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: #4e75f5; color: white; font-size: 27px; font-style: italic; font-weight: 600; }
+        .brand span { font-weight: 400; color: var(--text-dim); font-size: 12px; letter-spacing: 0; }
         .header-actions { display: flex; align-items: center; gap: 8px; }
         .theme-toggle, .stats-toggle { border: 1px solid var(--border); background: transparent; color: var(--text-main); border-radius: 9px; min-height: 36px; padding: 8px 12px; font-size: 11px; font-weight: 500; }
         .stats-toggle { background: var(--card); }
-        .zenith-app { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; }
-        .workspace-intro { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: flex-end; padding: 34px 0 4px; }
-        .eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
-        .workspace-intro h2 { font-family: 'Instrument Serif', Georgia, serif; font-size: clamp(34px, 4vw, 48px); font-weight: 400; letter-spacing: -1.4px; line-height: 1.1; }
-        .workspace-intro h2 em { color: var(--accent); font-weight: 400; }
+        .zenith-app { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 32px; }
+        .workspace-intro { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: flex-end; padding: 34px 0 10px; }
+        .eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 12px; }
+        .workspace-intro h2 { font-size: clamp(30px, 3.4vw, 42px); font-weight: 500; letter-spacing: -1.8px; line-height: 1.2; }
+        .workspace-intro h2 em { color: var(--accent); font-weight: 500; font-style: normal; }
         .intro-note { font-size: 12px; color: var(--text-dim); line-height: 1.7; max-width: 210px; text-align: right; }
-        .timer-section { --accent: #d6e6b7; --text-dim: #acb7a6; --border: #ffffff1a; --card: #2b352c; --text-main: #f3f3e8; --progress-bg: #ffffff12; color: var(--text-main); background: #28342c; border-radius: 20px; display: flex; flex-direction: column; align-items: center; padding: 28px 36px 24px; position: relative; overflow: hidden; }
-        .timer-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, #79926520, transparent 65%); pointer-events: none; }
+        .timer-section { color: var(--text-main); border: 1px solid var(--border); background: linear-gradient(145deg, var(--card), var(--bg)); border-radius: 24px; display: flex; flex-direction: column; align-items: center; padding: 26px 34px; position: relative; overflow: hidden; }
+        .timer-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 38%, #416bff18, transparent 65%); pointer-events: none; }
         .timer-section > * { position: relative; }
-        .session-topline { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; color: #c9d2c2; font-size: 10px; letter-spacing: 1.6px; text-transform: uppercase; }
-        .session-topline span:last-child { display: flex; align-items: center; gap: 6px; color: #a9bba0; font-size: 9px; letter-spacing: .7px; }
-        .session-topline span:last-child::before { content: ''; width: 5px; height: 5px; background: #c8da9e; border-radius: 50%; }
-        .mode-selector { display: flex; justify-content: center; gap: 4px; padding: 4px; border: 1px solid #ffffff0d; background: #19241d55; border-radius: 10px; margin-bottom: 18px; }
-        .mode-btn { border: 0; background: transparent; color: #afb9ab; font-size: 11px; font-weight: 500; padding: 10px 14px; border-radius: 7px; white-space: nowrap; }
-        .mode-btn.active { background: #eceddf; color: #28342c; }
+        .session-topline { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 44px; color: var(--text-dim); font-size: 10px; letter-spacing: 1.6px; text-transform: uppercase; }
+        .session-topline span:last-child { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 9px; letter-spacing: .7px; }
+        .session-topline span:last-child::before { content: ''; width: 5px; height: 5px; background: #83bba5; border-radius: 50%; }
+        .mode-selector { display: flex; justify-content: center; gap: 3px; padding: 5px; border: 1px solid var(--border); background: var(--bg); border-radius: 30px; margin-bottom: 0; }
+        .mode-btn { border: 0; background: transparent; color: var(--text-dim); font-size: 11px; font-weight: 500; padding: 10px 16px; border-radius: 24px; white-space: nowrap; }
+        .mode-btn.active { background: #4e75f5; color: white; box-shadow: 0 2px 10px #3e68ea30; }
         .custom-timer-input { align-items: center; gap: 8px; font-size: 12px; margin-bottom: 12px; }
         .custom-timer-input input { width: 65px; padding: 5px 8px; }
         .custom-warning { display: none; color: #f4b1a4; }
         .custom-warning.show { display: block; }
-        .progress-ring-container { width: min(100%, 300px); aspect-ratio: 1; height: auto; position: relative; margin: 2px auto 18px; }
-        .progress-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .progress-ring-container { width: 100%; height: 280px; position: relative; margin: 12px auto 0; }
+        .progress-ring { display: none; }
         .progress-ring circle { stroke-width: 1.4px; }
         .progress-ring__circle { transition: stroke-dashoffset .3s linear; }
         .timer-wrapper { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .timer-mode { color: #bccab0; font-size: 10px; font-weight: 500; letter-spacing: 3px; margin-bottom: 13px; text-transform: uppercase; }
-        #timer-display { font-family: 'DM Sans', sans-serif; font-variant-numeric: tabular-nums; font-size: 78px; font-weight: 400; letter-spacing: -5px; line-height: 1.1; }
-        .timer-caption { font-size: 11px; color: #a0ae98; margin-top: 14px; }
-        .control-group { display: flex; gap: 10px; width: min(100%, 288px); margin-bottom: 16px; }
-        .btn { border-radius: 10px; height: 48px; font-weight: 600; font-size: 12px; }
-        .btn-main { background: #dce7c4; border: 1px solid #dce7c4; color: #28342c; flex: 1; }
-        .btn-main:hover { background: #eaf1db; transform: translateY(-1px); }
-        .btn-icon { width: 48px; border: 1px solid #ffffff24; background: transparent; color: #e1e7d8; font-size: 22px; }
-        .shortcuts-hint { color: #9ca894; font-size: 9px; text-align: center; margin-bottom: 25px; }
-        .shortcut-key { font-family: inherit; border: 1px solid #ffffff24; border-radius: 4px; padding: 2px 5px; font-size: 9px; }
+        .timer-mode { color: var(--text-dim); font-size: 10px; font-weight: 500; letter-spacing: 3px; margin-bottom: 9px; text-transform: uppercase; }
+        #timer-display { font-family: 'DM Sans', sans-serif; font-variant-numeric: tabular-nums; font-size: clamp(88px, 10vw, 140px); font-weight: 500; letter-spacing: -8px; line-height: 1.15; text-shadow: 0 0 70px #5683ff22; }
+        .timer-caption { font-size: 12px; color: var(--text-dim); margin-top: 12px; }
+        .session-progress { width: min(100%, 230px); height: 3px; background: var(--progress-bg); border-radius: 3px; margin: 0 auto 30px; overflow: hidden; }
+        #session-progress-fill { width: 0; height: 100%; background: var(--accent); transition: width .3s linear; }
+        .control-group { display: flex; gap: 10px; width: min(100%, 262px); margin-bottom: 20px; }
+        .btn { border-radius: 30px; height: 48px; font-weight: 500; font-size: 12px; }
+        .btn-main { background: #4e75f5; border: 1px solid #6286ff; color: white; flex: 1; box-shadow: 0 5px 22px #345de92b; }
+        .btn-main:hover { background: #6084ff; transform: translateY(-1px); }
+        .btn-icon { width: 48px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-size: 22px; }
+        .shortcuts-hint { color: var(--text-dim); font-size: 9px; text-align: center; margin-bottom: 30px; }
+        .shortcut-key { font-family: inherit; border: 1px solid var(--border); border-radius: 4px; padding: 2px 5px; font-size: 9px; }
         .daily-goal-section { width: 100%; border-top: 1px solid var(--border); padding-top: 20px; margin-top: auto; }
         .daily-goal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
         .track-label { color: var(--text-dim); font-size: 11px; font-weight: 500; text-align: left; }
@@ -81,18 +83,18 @@
         .cycle-btn { width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 6px; color: inherit; background: transparent; }
         #goal-count, #cycle-count { font-size: 12px; font-variant-numeric: tabular-nums; }
         .cycle-label { color: var(--text-dim); font-size: 10px; }
-        .goal-progress-bar { height: 4px; border-radius: 4px; background: #ffffff17; overflow: hidden; }
+        .goal-progress-bar { height: 4px; border-radius: 4px; background: var(--progress-bg); overflow: hidden; }
         .goal-progress-fill { height: 100%; width: 0; background: var(--accent); transition: width .3s; }
-        .goal-progress-label { color: #a8b49f; font-size: 10px; margin-top: 8px; text-align: right; }
+        .goal-progress-label { color: var(--text-dim); font-size: 10px; margin-top: 8px; text-align: right; }
         .music-section { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
-        .sound-card, .task-section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+        .sound-card, .task-section { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; }
         .section-heading { font-size: 15px; letter-spacing: -.3px; font-weight: 600; margin-bottom: 6px; }
         .section-description { color: var(--text-dim); font-size: 11px; line-height: 1.6; margin-bottom: 18px; }
         .source-selector { display: flex; gap: 3px; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
         .source-btn { border: 0; border-radius: 6px; background: transparent; padding: 7px 8px; color: var(--text-dim); font-size: 10px; display: flex; align-items: center; gap: 4px; }
         .source-btn.active { background: var(--accent-glow); color: var(--accent); }
-        .presets { display: flex; gap: 5px; margin-bottom: 18px; }
-        .preset-btn { flex: 1; padding: 8px 3px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); border-radius: 7px; font-size: 9px; white-space: nowrap; }
+        .presets { display: flex; gap: 5px; margin-bottom: 22px; }
+        .preset-btn { flex: 1; padding: 9px 3px; border: 1px solid var(--border); background: var(--bg); color: var(--text-dim); border-radius: 7px; font-size: 9px; white-space: nowrap; }
         .preset-btn:hover, .preset-btn.active { color: var(--accent); border-color: var(--accent); }
         .mixer-panel { display: flex; flex-direction: column; gap: 19px; }
         .mixer-panel.hidden { display: none; }
@@ -114,7 +116,7 @@
         .task-input-row input, .custom-link-input input, .yt-custom-input input { flex: 1; width: 100%; }
         .custom-link-save { background: var(--accent); border: 0; color: var(--card); border-radius: 7px; width: 36px; flex-shrink: 0; }
         .task-list { list-style: none; max-height: 160px; overflow-y: auto; margin-top: 10px; }
-        .task-list:empty::after { content: attr(data-empty); display: block; color: var(--text-dim); font-size: 11px; line-height: 1.7; padding: 12px 0 2px; }
+        .task-list:empty::after { content: attr(data-empty); display: block; color: var(--text-dim); font-size: 11px; line-height: 1.8; padding: 15px 0 6px; }
         .task-item { display: flex; align-items: center; gap: 9px; padding: 9px 0; border-bottom: 1px solid var(--border); }
         .task-checkbox { border: 1px solid var(--border); background: transparent; width: 18px; height: 18px; border-radius: 5px; color: var(--card); flex-shrink: 0; font-size: 10px; }
         .task-item.done .task-checkbox { background: var(--accent); border-color: var(--accent); }
@@ -123,7 +125,7 @@
         .task-delete { border: 0; background: none; color: var(--text-dim); padding: 5px; }
         .footer { font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 2px; }
         .footer span { color: var(--accent); }
-        .footer-copyright { grid-column: 1 / -1; padding: 0 0 8px; color: var(--text-dim); font-size: 10px; text-align: center; }
+        .footer-copyright { grid-column: 1 / -1; padding: 0 0 8px; color: var(--text-dim); font-size: 10px; text-align: left; }
         .notification-prompt { display: none; }
         .notification-prompt.show { display: block; }
         .notification-btn { width: 100%; color: var(--text-dim); border: 1px solid var(--border); background: transparent; border-radius: 8px; padding: 10px; font-size: 11px; }
@@ -138,7 +140,7 @@
         .yt-preset-btn { border: 1px solid var(--border); color: var(--text-dim); background: transparent; border-radius: 5px; padding: 5px; font-size: 10px; }
         .yt-preset-btn.active { border-color: var(--accent); color: var(--accent); }
         .yt-custom-input { margin-bottom: 10px; }
-        .stats-panel, .finish-modal { display: none; position: fixed; inset: 0; padding: 24px; background: #111b17b3; backdrop-filter: blur(8px); z-index: 200; overflow-y: auto; }
+        .stats-panel, .finish-modal { display: none; position: fixed; inset: 0; padding: 24px; background: #080d19b3; backdrop-filter: blur(8px); z-index: 200; overflow-y: auto; }
         .stats-panel.active, .finish-modal { display: flex; align-items: center; justify-content: center; }
         .stats-content, .finish-modal-content { background: var(--card); border: 1px solid var(--border); padding: 28px; border-radius: 20px; max-width: 480px; width: 100%; max-height: 90svh; overflow-y: auto; }
         .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
@@ -171,7 +173,7 @@
             .intro-note { display: none; }
             .timer-section { padding: 24px 20px; }
             .mode-btn { padding: 9px 8px; font-size: 10px; }
-            .progress-ring-container { width: min(100%, 270px); height: auto; }
+            .progress-ring-container { width: 100%; height: 250px; }
             .sound-card, .task-section { padding: 18px; }
         }
         @media (max-width: 700px) {
@@ -184,14 +186,14 @@
             .brand span { display: none; }
             .zenith-app { grid-template-columns: 1fr; gap: 16px; max-width: 480px; }
             .workspace-intro { padding: 23px 0 4px; }
-            .workspace-intro h2 { font-size: 37px; }
+            .workspace-intro h2 { font-size: 30px; letter-spacing: -1.3px; max-width: 300px; }
             .eyebrow { font-size: 9px; }
             .timer-section { padding: 22px; border-radius: 16px; }
             .session-topline { margin-bottom: 22px; }
             .mode-selector { width: 100%; }
             .mode-btn { flex: 1; padding: 9px 5px; font-size: 10px; }
-            .progress-ring-container { width: min(100%, 260px); height: auto; margin: 0 auto 12px; }
-            #timer-display { font-size: 70px; }
+            .progress-ring-container { width: 100%; height: 220px; margin: 10px auto 0; }
+            #timer-display { font-size: clamp(78px, 23vw, 98px); letter-spacing: -6px; }
             .control-group { width: 100%; }
             .shortcuts-hint { margin-bottom: 20px; }
             .music-section { gap: 16px; }
@@ -205,13 +207,13 @@
         @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
     </style>
 </head>
-<body data-theme="light" role="application" aria-label="Zenith Focus - Derin Çalışma Uygulaması">
+<body data-theme="dark" role="application" aria-label="Zenith Focus - Derin Çalışma Uygulaması">
 
     <div class="bg-gradient" aria-hidden="true"></div>
 
     <!-- Desktop Header -->
     <header class="app-header">
-        <div class="brand">zenith<span> / focus</span></div>
+        <div class="brand">zenith<span>focus workspace</span></div>
         <div class="header-actions">
             <button class="theme-toggle" id="lang-btn" aria-label="Dil değiştir">🌐 TR</button>
             <button class="theme-toggle" id="theme-btn" aria-label="Tema değiştir">🌙 GECE MODU</button>
@@ -225,8 +227,8 @@
 
     <main class="zenith-app">
         <div class="workspace-intro">
-            <div><p class="eyebrow" data-i18n="workspaceLabel">KENDİNE BİR ALAN AÇ</p>
-            <h2><span data-i18n="introTitle">Az şey yap.</span> <em data-i18n="introEmphasis">Tam odaklan.</em></h2></div>
+            <div><p class="eyebrow" data-i18n="workspaceLabel">DAHA AZ GÜRÜLTÜ. DAHA ÇOK ODAK.</p>
+            <h2><span data-i18n="introTitle">Zihnini boşalt.</span> <em data-i18n="introEmphasis">Akışa gir.</em></h2></div>
             <p class="intro-note" data-i18n="introNote">Bir görev, sakin bir zihin.
 Gerisi biraz bekleyebilir.</p>
         </div>
@@ -258,6 +260,8 @@ Gerisi biraz bekleyebilir.</p>
                     <p class="timer-caption" data-i18n="timerCaption">Şimdi sadece buradasın.</p>
                 </div>
             </div>
+
+            <div class="session-progress" aria-hidden="true"><div id="session-progress-fill"></div></div>
 
             <div class="control-group">
                 <button class="btn btn-main" id="start-btn" aria-label="Timer'ı başlat" data-i18n="startFocus">ODAK BAŞLAT</button>
@@ -294,8 +298,8 @@ Gerisi biraz bekleyebilir.</p>
         <!-- Right Column - Music & Settings -->
         <div class="music-section">
             <div class="sound-card">
-            <h2 class="section-heading" data-i18n="soundTitle">Arka planın, senin ritmin.</h2>
-            <p class="section-description" data-i18n="soundDescription">Dışarıdaki sesi biraz kıs.</p>
+            <h2 class="section-heading" data-i18n="soundTitle">Kendi atmosferini yarat.</h2>
+            <p class="section-description" data-i18n="soundDescription">Sana iyi gelen sesleri bir araya getir.</p>
             <div class="source-selector" role="group" aria-label="Müzik kaynağı seç">
                 <button class="source-btn local active" data-source="local" aria-pressed="true">
                     <i class="fas fa-music"></i> Yerel
@@ -527,10 +531,10 @@ Gerisi biraz bekleyebilir.</p>
         // ── i18n ──────────────────────────────────────────
         const i18n = {
             tr: {
-                workspaceLabel: 'KENDİNE BİR ALAN AÇ', introTitle: 'Az şey yap.', introEmphasis: 'Tam odaklan.',
-                introNote: 'Bir görev, sakin bir zihin. Gerisi biraz bekleyebilir.', sessionLabel: 'ODAK ALANI',
+                workspaceLabel: 'DAHA AZ GÜRÜLTÜ. DAHA ÇOK ODAK.', introTitle: 'Zihnini boşalt.', introEmphasis: 'Akışa gir.',
+                introNote: 'Burası senin odak alanın. Dış dünya biraz bekleyebilir.', sessionLabel: 'ODAK ALANI',
                 sessionStatus: 'KENDİ RİTMİNDE', timerCaption: 'Şimdi sadece buradasın.',
-                soundTitle: 'Arka planın, senin ritmin.', soundDescription: 'Dışarıdaki sesi biraz kıs.',
+                soundTitle: 'Kendi atmosferini yarat.', soundDescription: 'Sana iyi gelen sesleri bir araya getir.',
                 soundrain: '↟ Yağmur',
                 soundforest: '♧ Orman',
                 soundfire: '♨ Ateş',
@@ -561,15 +565,15 @@ Gerisi biraz bekleyebilir.</p>
                 langBtn:      'TR',
                 taskLabel:    'Sırada ne var?',
                 taskPlaceholder: 'Yeni görev ekle...',
-                goalLabel:    'Günlük niyetin',
+                goalLabel:    'Bugünkü hedefin',
                 goalUnit:     'seans',
                 shortcutStart:'Başlat/Duraklat',
                 shortcutEsc:  'Sıfırla',
                 copyrightLine:'© 2026 Berfin Nida — Kod & Tasarım',
             },
             en: {
-                workspaceLabel: 'A LITTLE SPACE FOR YOURSELF', introTitle: 'Do less.', introEmphasis: 'Focus fully.',
-                introNote: 'One task, a quieter mind. Everything else can wait.', sessionLabel: 'FOCUS SPACE',
+                workspaceLabel: 'LESS NOISE. MORE FOCUS.', introTitle: 'Clear your mind.', introEmphasis: 'Find your flow.',
+                introNote: 'Your space for deep work. The outside world can wait.', sessionLabel: 'FOCUS SPACE',
                 sessionStatus: 'AT YOUR OWN PACE', timerCaption: 'Be here, for a little while.',
                 soundTitle: 'Set your own atmosphere.', soundDescription: 'Turn the outside world down.',
                 soundrain: '↟ Rain',
@@ -602,7 +606,7 @@ Gerisi biraz bekleyebilir.</p>
                 langBtn:      'EN',
                 taskLabel:    'What’s next?',
                 taskPlaceholder: 'Add a new task...',
-                goalLabel:    'Daily intention',
+                goalLabel:    'Today’s goal',
                 goalUnit:     'sessions',
                 shortcutStart:'Start/Pause',
                 shortcutEsc:  'Reset',
@@ -627,7 +631,7 @@ Gerisi biraz bekleyebilir.</p>
                 this.isRunning = false;
                 this.interval = null;
                 this.settingsKey = 'zenith_settings_v1';
-                this.theme = 'light';
+                this.theme = 'dark';
                 this.lang = storage.getItem('zenith_lang') === 'en' ? 'en' : 'tr';
                 this.sessions = 0;
                 this.focusCount = 0; // Pomodoro döngüsü sayacı
@@ -1307,7 +1311,7 @@ Gerisi biraz bekleyebilir.</p>
                 setTimeout(() => this.dom.body.classList.remove('theme-transitioning'), 420);
 
                 this.dom.body.setAttribute('data-theme', this.theme);
-                document.querySelector('meta[name="theme-color"]').content = this.theme === 'dark' ? '#181e1a' : '#f5f4ef';
+                document.querySelector('meta[name="theme-color"]').content = this.theme === 'dark' ? '#090d16' : '#f4f6fb';
                 const t = i18n[this.lang];
                 if (this.dom.themeBtn) this.dom.themeBtn.textContent = this.theme === 'dark' ? t.themeNight : t.themeDay;
                 if (this.dom.themeBtnMobile) this.dom.themeBtnMobile.textContent = this.theme === 'dark' ? '🌙' : '☀️';
@@ -1480,6 +1484,8 @@ Gerisi biraz bekleyebilir.</p>
             }
 
             updateProgress() {
+                const bar = document.getElementById('session-progress-fill');
+                if (bar) bar.style.width = `${this.totalTime > 0 ? Math.max(0, Math.min(100, (1 - this.timeLeft / this.totalTime) * 100)) : 0}%`;
                 if (this.totalTime <= 0) {
                     this.progressRing.style.strokeDashoffset = 0;
                     return;
